@@ -2,37 +2,54 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/*  bellpalbildens stats här */
+img {
+  height: 200px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/*  specs for cirle button */
+.btn-circle.btn-xl {
+  width: 110px;
+  height: 110px;
+  padding: 14px 20px;
+  border-radius: 55px;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.btn-Quick-Press {
+  /* opacity: 0.2;
+  filter: alpha(opacity=20); */
+  background-color: 	#ff9a00 !important;
+  
+  /* background-color: #4caf50 imp !important; */
+  border-color: 	#ff9a00 !important;
 }
 
-.App-link {
-  color: #61dafb;
+.btn-Short-Hold {
+  /* opacity: 0.2;
+  filter: alpha(opacity=20); */
+  background-color: #ff7400 !important;
+  
+  /* background-color: #4caf50 imp !important; */
+  border-color: #ff7400 !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.btn-Medium-Hold {
+  /* opacity: 0.2;
+  filter: alpha(opacity=20); */
+  background-color: #ff4d00 !important;
+  
+  /* background-color: #4caf50 imp !important; */
+  border-color: #ff4d00 !important;
+}
+
+.btn-Long-Hold {
+  /* opacity: 0.2;
+  filter: alpha(opacity=20); */
+  background-color: #ff0000 !important;
+  
+  /* background-color: #4caf50 imp !important; */
+  border-color: #ff0000 !important;
 }
