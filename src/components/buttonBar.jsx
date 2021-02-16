@@ -199,7 +199,7 @@ const ButtonBar = () => {
       <h1>hejsan, här nedan har vi alla states</h1>
       <br></br>
       {/* FRÅGA MUSTAFA */}
-      {/* {listOfButtons.map((stateBtn) => {
+      {listOfButtons.map((stateBtn) => {
         return (
           <StateButton
             id={stateBtn}
@@ -207,12 +207,12 @@ const ButtonBar = () => {
             text={'hej'}
           />
         );
-      })} */}
+      })}
       {/* {console.log(buttonMap.values())}  // skrivs ut korrekt */}
       {/* {console.log(buttonMap.keys())}     // skrivs ut korrekt */}
 
       {/* dONT USE THIS BELOW, USE NEW ARRAY WITH OBJECTS INSTEAD */}
-      {
+      {/* {
         buttonMap.forEach((btnIdString, btnText) => {
           return(
             <StateButton
@@ -222,7 +222,7 @@ const ButtonBar = () => {
             />
           );
         })
-      }
+      } */}
       {/* <button
         id="lightSleepStateBtn"
         onClick={() => changeOpacityAndStateOnClick("lightSleepStateBtn")} // HÄR skulle jag vilja ha buttons variabel id som argument istället för en sträng
