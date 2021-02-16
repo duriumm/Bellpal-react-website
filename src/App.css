@@ -14,24 +14,30 @@ img {
   padding: 14px 20px;
   border-radius: 55px;
   font-size: 13px;
+  /* word-break: break-word; // This didnt work either. Word still goes outside circle */
   font-weight: bold;
   text-align: center;
+}
+
+/* This didnt work :( */
+#testing {
+  width: 500;
 }
 
 .btn-Quick-Press {
   /* opacity: 0.2;
   filter: alpha(opacity=20); */
-  background-color: 	#ff9a00 !important;
-  
+  background-color: #ff9a00 !important;
+
   /* background-color: #4caf50 imp !important; */
-  border-color: 	#ff9a00 !important;
+  border-color: #ff9a00 !important;
 }
 
 .btn-Short-Hold {
   /* opacity: 0.2;
   filter: alpha(opacity=20); */
   background-color: #ff7400 !important;
-  
+
   /* background-color: #4caf50 imp !important; */
   border-color: #ff7400 !important;
 }
@@ -40,7 +46,7 @@ img {
   /* opacity: 0.2;
   filter: alpha(opacity=20); */
   background-color: #ff4d00 !important;
-  
+
   /* background-color: #4caf50 imp !important; */
   border-color: #ff4d00 !important;
 }
@@ -49,7 +55,7 @@ img {
   /* opacity: 0.2;
   filter: alpha(opacity=20); */
   background-color: #ff0000 !important;
-  
+
   /* background-color: #4caf50 imp !important; */
   border-color: #ff0000 !important;
 }
