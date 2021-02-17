@@ -1,5 +1,4 @@
-import React, { useState, useEffect} from "react";
-import { renderIntoDocument } from "react-dom/test-utils";
+import React, { useState, useEffect, useRef} from "react";
 import StateButton from "./stateButton";
 
 const ENUMSTATE = {
@@ -35,7 +34,38 @@ const ButtonBar = () => {
   const [intervalId, setIntervalId] = useState(null);
   const [currentState, setCurrentState] = useState(ENUMSTATE.DEEP_SLEEP_STATE); // Sätts denna på varje re-render
   const [previousButton, setPreviousButton] = useState(null);
-  const [deepSleepTimer, setDeepSleepTimer] = useState(null);
+  const [timer, setTimer] = useState(null);
+  const [isAlarmingFollowers, setIsAlarmingFollowers] = useState(false);
+
+  const initialRender = useRef(true);
+
+  // Denna useEffect tittar om det är första render av websidan. 
+  // Är det första gången så returnerar vi. Annars kör vi på som vanligt.
+  // Detta för att inte sätta label till "alarm sent to followers" från start.
+  useEffect(() => {
+    
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    } 
+    else {
+      // TO-DO - Fixa denna kodsnuytt finare
+      console.log("We are alarming followers");
+      setTimer(clearTimeout(timer)); // clear timer for safety
+      document.getElementById("TopAlarmLabel").className = "badge badge-danger";
+      document.getElementById("TopAlarmLabel").innerHTML = "Alarm sent to followers!";
+      console.log("we did sumthn on alarm send");
+      clearInterval(intervalId); 
+      setCounter(0);
+      enableButton("ConfirmAlarmBtn");
+    }  
+  }, [isAlarmingFollowers]);
+
+  const confirmWatchAlarmFromPhone = () => {
+    disableButton("ConfirmAlarmBtn");
+    setCurrentState(ENUMSTATE.ALARM_CONFIRMED_STATE);
+
+  }
 
   const changeStateOnClick = (buttonInputId) => {
 
@@ -61,9 +91,9 @@ const ButtonBar = () => {
   useEffect(() => {
     console.log("Current state in useEffect but BEFORE check: "+currentState);
     if(currentState === ENUMSTATE.DEEP_SLEEP_STATE){
-      setDeepSleepTimer(clearTimeout(deepSleepTimer));
+      setTimer(clearTimeout(timer));
       changeOpacityOnStateButton("deepSleepStateBtn");
-
+      disableButton("ConfirmAlarmBtn"); 
       disableButton("ConnectWatchToPhone");
       enableButton("QuickPress"); // Enters factory default
       disableButton("ShortHold");
@@ -75,8 +105,8 @@ const ButtonBar = () => {
       changeOpacityOnStateButton("factoryDefaultStateBtn");
       // TO-DO - Make watch LED blink accordingly to state (blue,null)
       
-      setDeepSleepTimer(setTimeout(() => setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE), 120000)); // Changes back to deepSleep state after 120 sec
-
+      setTimer(setTimeout(() => setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE), 120000)); // Changes back to deepSleep state after 120 sec
+      disableButton("ConfirmAlarmBtn"); 
       enableButton("ConnectWatchToPhone");
       disableButton("QuickPress");
       disableButton("ShortHold");
@@ -85,9 +115,10 @@ const ButtonBar = () => {
     }
     else if(currentState === ENUMSTATE.SENSING_STATE){
 
-      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      setTimer(clearTimeout(timer)); // Clear timer so we dont go back to deep sleep state
+      setTimer(setTimeout(() => setCurrentState(ENUMSTATE.LIGHT_SLEEP_STATE), 120000)); // Changes state to lightSleep after 120 sec (inactivity)
       changeOpacityOnStateButton("sensingStateBtn");
-
+      disableButton("ConfirmAlarmBtn"); 
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  // Man får grönt ljus men ingen action
       enableButton("ShortHold");    // Man får grönt ljus och vid 10s trigarr man manual alarm
@@ -95,9 +126,9 @@ const ButtonBar = () => {
       enableButton("LongHold");     // Man får grönt ljus och gör factory reset efter 30s
     }
     else if(currentState === ENUMSTATE.LIGHT_SLEEP_STATE){
-      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      setTimer(clearTimeout(timer)); // Clear timer so we dont go back to deep sleep state
       changeOpacityOnStateButton("lightSleepStateBtn");
-
+      disableButton("ConfirmAlarmBtn"); 
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  // Man får grönt ljus men ingen action
       enableButton("ShortHold");    // Man får grönt ljus och vid 10s trigarr man manual alarm
@@ -105,27 +136,40 @@ const ButtonBar = () => {
       enableButton("LongHold");     // Man får grönt ljus och gör factory reset efter 30s
     }
     else if(currentState === ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE){
-      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      setTimer(clearTimeout(timer)); // Clear timer so we dont go back to deep sleep state
       changeOpacityOnStateButton("notifyingAppFallAlarmStateBtn");
-
+      disableButton("ConfirmAlarmBtn"); 
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
+
+      // TO-DO - change label to "Watch is trying to send alarm to phone"
     }
     else if(currentState === ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE){
-      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
-      changeOpacityOnStateButton("notifyingAppManualAlarmStateBtn");
-
+      setTimer(clearTimeout(timer)); // Clear timer so we dont go back to deep sleep state
+      disableButton("ConfirmAlarmBtn"); 
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
+
+      changeOpacityOnStateButton("notifyingAppManualAlarmStateBtn");
+
+      // 3 second timer before we enter Sending alarm state and clear the timer
+      setTimer(setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), 3000)); 
+      document.getElementById("TopAlarmLabel").className = "badge badge-info";
+      document.getElementById("TopAlarmLabel").innerHTML = "Watch is trying to send alarm to phone";
+
+
+      // might not need clear here since every state clears the timer individually
+      //setTimer(clearTimeout)
     }
     else if(currentState === ENUMSTATE.SENDING_ALARM_STATE){
-      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      console.log("test1");
+      setTimer(clearTimeout(timer)); // Clear timer so we dont go back to deep sleep state
       changeOpacityOnStateButton("sendingAlarmStateBtn");
 
       disableButton("ConnectWatchToPhone");
@@ -133,21 +177,29 @@ const ButtonBar = () => {
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
+      
+      startAlarmCounter();
+      
+      document.getElementById("TopAlarmLabel").className = "badge badge-warning";
+      document.getElementById("TopAlarmLabel").innerHTML = "App received alarm from watch, 30sec before alarm is sent to followers";
     }
     else if(currentState === ENUMSTATE.ALARM_CONFIRMED_STATE){
-      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      setTimer(clearTimeout(timer)); // Clear timer so we dont go back to deep sleep state
       changeOpacityOnStateButton("alarmConfirmedStateBtn");
-
+      disableButton("ConfirmAlarmBtn");     
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
+
+      document.getElementById("TopAlarmLabel").className = "badge badge-success";
+      document.getElementById("TopAlarmLabel").innerHTML = "Alarm confirmed by follower";
     }
     else if(currentState === ENUMSTATE.RESETTING_ALARM_STATE){
-      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      setTimer(clearTimeout(timer)); // Clear timer so we dont go back to deep sleep state
       changeOpacityOnStateButton("resettingAlarmStateBtn");
-
+      disableButton("ConfirmAlarmBtn"); 
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
@@ -156,6 +208,24 @@ const ButtonBar = () => {
     }
   },[currentState]);
 
+
+
+  const startAlarmCounter = () => {
+    // Resetting the counter and clearing the interval if there was any previously
+    // Then we start the counter interval and assign it to our variable
+    setCounter(0);
+    clearInterval(intervalId);
+    setAlarmed(true);
+    const id = setInterval(() => {
+      setCounter((counter) => counter + 1);
+    }, 1000);
+    setIntervalId(id);
+
+
+
+    console.log("test1");
+    setTimer(setTimeout(() => setIsAlarmingFollowers(true), 3000)); // After 30 sec we change a boolean to display that alarm is being sent to followers
+  }
 
   const connectWatchToPhone = () => {
     setCurrentState(ENUMSTATE.SENSING_STATE);
@@ -188,13 +258,11 @@ const ButtonBar = () => {
 
   // Short hold(2s) will trigger manual alarm but ONLY if watch is not already alarmed
   const handleOnWatchButton_ShortHold = () => {
-    if(alarmed === false){
+    if(alarmed === false && (currentState === ENUMSTATE.LIGHT_SLEEP_STATE || currentState === ENUMSTATE.SENSING_STATE)){
       // TO-DO - Enter correct state when manual larm has been triggered - TO-DO
-      setAlarmed(true);
-      const id = setInterval(() => {
-        setCounter((counter) => counter + 1);
-      }, 1000);
-      setIntervalId(id);
+
+      // Enter notify manual alarm where watch sends notification of incoming alarm to the phone app
+      setCurrentState(ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE);
     }
   };
 
@@ -203,8 +271,7 @@ const ButtonBar = () => {
     setAlarmed(false);
     clearInterval(intervalId); 
     setCounter(0);
-    console.log("REAL COUNTER VAL = " + counter);
-    // TO-DO - Enter correct state when resetting alarm - TO-DO
+    setCurrentState(ENUMSTATE.RESETTING_ALARM_STATE);
   };
 
   // Long hold(30s) will set state back to deepSleep state
@@ -223,12 +290,17 @@ const ButtonBar = () => {
   
   return (
     <div>
-      <span className="badge m-2 badge-warning">{counter}</span>
+     <h2> <span className="badge m-2 badge-dark">{counter}</span> </h2>
+      <div>
+        <h3> <p className="badge m-2 badge-primary" id="TopAlarmLabel">Alarm is not active</p> </h3>
+      </div>
+      
       <button
-        onClick={() => handleOnResetAlarmClick()}
+        id="ConfirmAlarmBtn"
+        onClick={() => confirmWatchAlarmFromPhone()}
         className="btn btn-success btn-sm m-2"
       >
-        Reset alarm
+        Confirm Alarm From Phone
       </button>
       <button
         id="ConnectWatchToPhone"
@@ -268,7 +340,7 @@ const ButtonBar = () => {
       </button>
       {/* Below are all the different state buttons */}
       <br></br>
-      <h1>hejsan, här nedan har vi alla states</h1>
+      <h1>States are shown below</h1>
       <br></br>
       {/* FRÅGA MUSTAFA */}
       {newArrayInsteadOfMap.map((stateBtnObject) => {

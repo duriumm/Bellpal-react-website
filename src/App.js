@@ -6,7 +6,7 @@ import ButtonBar from './components/buttonBar'
 function App() {
   return (
     <div className="App">
-      <h1>Buttons available</h1>
+      <h5>Alarm counter</h5>
       <ButtonBar />
       
     </div> 
