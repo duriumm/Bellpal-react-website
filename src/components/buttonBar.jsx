@@ -15,15 +15,15 @@ const ENUMSTATE = {
 };
  /// CHECK HERE /// CHECK HERE /// CHECK HERE /// CHECK HERE /// CHECK HERE /// CHECK HERE /// CHECK HERE
 const newArrayInsteadOfMap = [
-  { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep State Boi"},
-  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying<br />App<br />Fall Alarm"},
-  { btnId: "alarmConfirmedStateBtn", textOnBtn: "Alarm<br />Confirmed"},
+  { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep"},
+  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying App Fall Alarm"},
+  { btnId: "alarmConfirmedStateBtn", textOnBtn: "Alarm Confirmed"},
   { btnId: "sensingStateBtn", textOnBtn: "Sensing"},
-  { btnId: "resettingAlarmStateBtn", textOnBtn: "Resetting<br /> Alarm"},
-  { btnId: "sendingAlarmStateBtn", textOnBtn: "Sending<br />Alarm"},
-  { btnId: "factoryDefaultStateBtn", textOnBtn: "Factory<br />Default"},
-  { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "Notify App<br />Manual<br/ >Alarm"},
-  { btnId: "deepSleepStateBtn", textOnBtn: "Deep<br />Sleep"}
+  { btnId: "resettingAlarmStateBtn", textOnBtn: "Resetting Alarm"},
+  { btnId: "sendingAlarmStateBtn", textOnBtn: "Sending Alarm"},
+  { btnId: "factoryDefaultStateBtn", textOnBtn: "Factory Default"},
+  { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "Notify App Manual Alarm"},
+  { btnId: "deepSleepStateBtn", textOnBtn: "Deep Sleep"}
   
 ];
 
@@ -35,11 +35,9 @@ const ButtonBar = () => {
   const [intervalId, setIntervalId] = useState(null);
   const [currentState, setCurrentState] = useState(ENUMSTATE.DEEP_SLEEP_STATE); // Sätts denna på varje re-render
   const [previousButton, setPreviousButton] = useState(null);
+  const [deepSleepTimer, setDeepSleepTimer] = useState(null);
 
-  const changeOpacityAndStateOnClick = (buttonInputId) => {
-    if (previousButton != null) { document.getElementById(previousButton).style.opacity = 1.0; } // Sätter förra knappens opacity till 1.0 för att markera EJ vald (MUTATION!?)}
-    document.getElementById(buttonInputId).style.opacity = 0.5; // Sätter nuvarande knapp till 0.5 för att markera att den är val (MUTATION!?)
-    setPreviousButton(buttonInputId); // Sätter nuvarande knapp till previous button för att kunna access den senare
+  const changeStateOnClick = (buttonInputId) => {
 
     // Gör om detta så inputen från varje knapp är sin egen state så behövs bara 1 setCurrentState(stateInput)
     if      (buttonInputId === "lightSleepStateBtn")             { setCurrentState(ENUMSTATE.LIGHT_SLEEP_STATE);                } 
@@ -53,10 +51,20 @@ const ButtonBar = () => {
     else if (buttonInputId === "deepSleepStateBtn")              { setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE);                 }
   };
 
+  const changeOpacityOnStateButton = (buttonId) => {
+    if (previousButton != null) { document.getElementById(previousButton).style.opacity = 1.0; }
+    document.getElementById(buttonId).style.opacity = 0.5;
+    setPreviousButton(buttonId); 
+  };
+
   // Enable and Disable buttons each time currentState is being changed
   useEffect(() => {
     console.log("Current state in useEffect but BEFORE check: "+currentState);
     if(currentState === ENUMSTATE.DEEP_SLEEP_STATE){
+      setDeepSleepTimer(clearTimeout(deepSleepTimer));
+      changeOpacityOnStateButton("deepSleepStateBtn");
+
+      disableButton("ConnectWatchToPhone");
       enableButton("QuickPress"); // Enters factory default
       disableButton("ShortHold");
       disableButton("MediumHold");
@@ -64,48 +72,83 @@ const ButtonBar = () => {
       // TO-DO - either here or other place. Turn off the alarm.
     }
     else if(currentState === ENUMSTATE.FACTORY_DEFAULT_STATE){
+      changeOpacityOnStateButton("factoryDefaultStateBtn");
+      // TO-DO - Make watch LED blink accordingly to state (blue,null)
+      
+      setDeepSleepTimer(setTimeout(() => setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE), 120000)); // Changes back to deepSleep state after 120 sec
+
+      enableButton("ConnectWatchToPhone");
       disableButton("QuickPress");
       disableButton("ShortHold");
       disableButton("MediumHold");
       disableButton("LongHold");
     }
     else if(currentState === ENUMSTATE.SENSING_STATE){
+
+      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      changeOpacityOnStateButton("sensingStateBtn");
+
+      disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  // Man får grönt ljus men ingen action
       enableButton("ShortHold");    // Man får grönt ljus och vid 10s trigarr man manual alarm
       disableButton("MediumHold");  // Man får grönt ljus men ingen action
       enableButton("LongHold");     // Man får grönt ljus och gör factory reset efter 30s
     }
     else if(currentState === ENUMSTATE.LIGHT_SLEEP_STATE){
+      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      changeOpacityOnStateButton("lightSleepStateBtn");
+
+      disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  // Man får grönt ljus men ingen action
       enableButton("ShortHold");    // Man får grönt ljus och vid 10s trigarr man manual alarm
       disableButton("MediumHold");  // Man får grönt ljus men ingen action
       enableButton("LongHold");     // Man får grönt ljus och gör factory reset efter 30s
     }
     else if(currentState === ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE){
+      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      changeOpacityOnStateButton("notifyingAppFallAlarmStateBtn");
+
+      disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
     }
     else if(currentState === ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE){
+      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      changeOpacityOnStateButton("notifyingAppManualAlarmStateBtn");
+
+      disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
     }
     else if(currentState === ENUMSTATE.SENDING_ALARM_STATE){
+      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      changeOpacityOnStateButton("sendingAlarmStateBtn");
+
+      disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
     }
     else if(currentState === ENUMSTATE.ALARM_CONFIRMED_STATE){
+      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      changeOpacityOnStateButton("alarmConfirmedStateBtn");
+
+      disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
     }
     else if(currentState === ENUMSTATE.RESETTING_ALARM_STATE){
+      setDeepSleepTimer(clearTimeout(deepSleepTimer)); // Clear timer so we dont go back to deep sleep state
+      changeOpacityOnStateButton("resettingAlarmStateBtn");
+
+      disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  
       disableButton("ShortHold");
       disableButton("MediumHold");   
@@ -114,12 +157,8 @@ const ButtonBar = () => {
   },[currentState]);
 
 
-  const handleOnAlarmClick = () => {
-    setAlarmed(true);
-    const id = setInterval(() => {
-      setCounter((counter) => counter + 1);
-    }, 1000);
-    setIntervalId(id);
+  const connectWatchToPhone = () => {
+    setCurrentState(ENUMSTATE.SENSING_STATE);
   };
 
   const handleOnResetAlarmClick = () => {
@@ -132,15 +171,18 @@ const ButtonBar = () => {
   
   const enableButton = (buttonId) => {
     document.getElementById(buttonId).disabled = false;
+    document.getElementById(buttonId).style.fontWeight = "bold";
   };
   const disableButton = (buttonId) => {
     document.getElementById(buttonId).disabled = true;
+    document.getElementById(buttonId).style.fontWeight = "normal";
   };
   
   const handleOnWatchButton_QuickPress = () => {
     // TO-DO - If we are in deep sleep state, this buttonpress should take us to Factory default state
     //setCurrentState(ENUMSTATE.LIGHT_SLEEP_STATE);
-    console.log("current enumstate is: " + currentState);
+    setCurrentState(ENUMSTATE.FACTORY_DEFAULT_STATE);
+    console.log("We pressed quikcpress and entered factory default state");
     
   };
 
@@ -176,46 +218,8 @@ const ButtonBar = () => {
   };
 
 
-
-  // "DETTA E TYP MAIN HEHHEH"
-
-
-  // if(isFirstTimeRendering === true){
-  //   console.log("first time rendering!");
-  //   setIsFirstTimeRendering(false);
-  // }
-  // else if(isFirstTimeRendering === false){
-  //   console.log("NOT first time rendering!");
-  //   //startInitDeepSleepState();
-  //   testDisableButtons("QuickPress");
-  // }
-
-  //changeWatchButtonsBasedOnState();
-
-  // startInitDeepSleepState();
-  // enableButton("ShortHold");
-  // //changeButtonBasedOnState("ShortHold");
-  // if(currentState == ENUMSTATE.DEEP_SLEEP_STATE) {
-  //   console.log("we are in DEEP SLEEP state bruh");
-  //   disableButton("ShortHold");
-  //   disableButton("MediumHold");
-  //   disableButton("LongHold");
-  //   enableButton = ("QuickPress");
   
-  // // Quick press = Go to factory default state
-  // // Short hold  = NO change at all (gray out)
-  // // Medium hold = NO change at all (gray out)
-  // // Long hold   = NO change at all (gray out)
-  // }
-  
-  
-
-  // Denna if sats kör på varje RE-render av något objekt
-  // if(counter >= 30){
-  //   clearInterval(intervalId);
-  // }
   console.log("Actual active state is: " + currentState);
-  //changeWatchButtonsBasedOnState();
   
   return (
     <div>
@@ -227,10 +231,11 @@ const ButtonBar = () => {
         Reset alarm
       </button>
       <button
-        onClick={() => handleOnAlarmClick()}
-        className="btn btn-danger btn-sm m-2"
+        id="ConnectWatchToPhone"
+        onClick={() => connectWatchToPhone()}
+        className="btn btn-primary btn-sm m-2"
       >
-        Start Alarm
+        Connect Watch To Phone
       </button>
       <img src="BellpalWatch.png"></img>
       <button
@@ -270,7 +275,7 @@ const ButtonBar = () => {
         return (
           <StateButton
             id={stateBtnObject.btnId}
-            changeOpacityAndStateOnClick={changeOpacityAndStateOnClick}
+            changeStateOnClick={changeStateOnClick}
             text={stateBtnObject.textOnBtn}
           />
         );

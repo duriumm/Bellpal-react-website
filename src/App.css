@@ -14,14 +14,10 @@ img {
   padding: 14px 20px;
   border-radius: 55px;
   font-size: 13px;
-  /* word-break: break-word; // This didnt work either. Word still goes outside circle */
   font-weight: bold;
   text-align: center;
-}
-
-/* This didnt work :( */
-#testing {
-  width: 500;
+  white-space: normal !important;
+  word-wrap: break-word;
 }
 
 .btn-Quick-Press {
