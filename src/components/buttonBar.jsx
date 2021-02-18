@@ -40,6 +40,20 @@ const ButtonBar = () => {
 
   const initialRender = useRef(true);
 
+  // const changeStateOnClick = (buttonInputId) => {
+  //   // THIS WILL NOT BE NEEDED IN THE FINAL PRODUCT AS WE WONT CHANGE STATES ON THE STATEBUTTONS THEMSELVES
+  //   // Gör om detta så inputen från varje knapp är sin egen state så behövs bara 1 setCurrentState(stateInput)
+  //   if      (buttonInputId === "lightSleepStateBtn")             { setCurrentState(ENUMSTATE.LIGHT_SLEEP_STATE);                } 
+  //   else if (buttonInputId === "notifyingAppFallAlarmStateBtn")  { setCurrentState(ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE);   } 
+  //   else if (buttonInputId === "alarmConfirmedStateBtn")         { setCurrentState(ENUMSTATE.ALARM_CONFIRMED_STATE);            }
+  //   else if (buttonInputId === "sensingStateBtn")                { setCurrentState(ENUMSTATE.SENSING_STATE);                    }
+  //   else if (buttonInputId === "resettingAlarmStateBtn")         { setCurrentState(ENUMSTATE.RESETTING_ALARM_STATE);            } 
+  //   else if (buttonInputId === "sendingAlarmStateBtn")           { setCurrentState(ENUMSTATE.SENDING_ALARM_STATE);              } 
+  //   else if (buttonInputId === "factoryDefaultStateBtn")         { setCurrentState(ENUMSTATE.FACTORY_DEFAULT_STATE);            } 
+  //   else if (buttonInputId === "notifyingAppManualAlarmStateBtn"){ setCurrentState(ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE); } 
+  //   else if (buttonInputId === "deepSleepStateBtn")              { setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE);                 }
+  // };
+
   // Denna useEffect tittar om det är första render av websidan. 
   // Är det första gången så returnerar vi. Annars kör vi på som vanligt.
   // Detta för att inte sätta label till "alarm sent to followers" från start.
@@ -71,23 +85,10 @@ const ButtonBar = () => {
     setCurrentState(ENUMSTATE.ALARM_CONFIRMED_STATE);
   }
 
-  const changeStateOnClick = (buttonInputId) => {
-    // THIS WILL NOT BE NEEDED IN THE FINAL PRODUCT AS WE WONT CHANGE STATES ON THE STATEBUTTONS THEMSELVES
-    // Gör om detta så inputen från varje knapp är sin egen state så behövs bara 1 setCurrentState(stateInput)
-    if      (buttonInputId === "lightSleepStateBtn")             { setCurrentState(ENUMSTATE.LIGHT_SLEEP_STATE);                } 
-    else if (buttonInputId === "notifyingAppFallAlarmStateBtn")  { setCurrentState(ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE);   } 
-    else if (buttonInputId === "alarmConfirmedStateBtn")         { setCurrentState(ENUMSTATE.ALARM_CONFIRMED_STATE);            }
-    else if (buttonInputId === "sensingStateBtn")                { setCurrentState(ENUMSTATE.SENSING_STATE);                    }
-    else if (buttonInputId === "resettingAlarmStateBtn")         { setCurrentState(ENUMSTATE.RESETTING_ALARM_STATE);            } 
-    else if (buttonInputId === "sendingAlarmStateBtn")           { setCurrentState(ENUMSTATE.SENDING_ALARM_STATE);              } 
-    else if (buttonInputId === "factoryDefaultStateBtn")         { setCurrentState(ENUMSTATE.FACTORY_DEFAULT_STATE);            } 
-    else if (buttonInputId === "notifyingAppManualAlarmStateBtn"){ setCurrentState(ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE); } 
-    else if (buttonInputId === "deepSleepStateBtn")              { setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE);                 }
-  };
 
   const changeOpacityOnStateButton = (buttonId) => {
-    if (previousButton != null) { document.getElementById(previousButton).style.opacity = 1.0; }
-    document.getElementById(buttonId).style.opacity = 0.5;
+    if (previousButton != null) { document.getElementById(previousButton).style.opacity = 0.5; }
+    document.getElementById(buttonId).style.opacity = 1.0;
     setPreviousButton(buttonId); 
   };
 
@@ -104,10 +105,10 @@ const ButtonBar = () => {
       disableButton("ShortHold");
       disableButton("MediumHold");
       disableButton("LongHold");
-      // TO-DO - either here or other place. Turn off the alarm. (DONE IN RESET STATE)
 
       document.getElementById("TopAlarmLabel").className = "badge badge-dark";
       document.getElementById("TopAlarmLabel").innerHTML = "In deep sleep mode";
+
       // Resetting the factoryReset bool to not get stuck in deep sleep state
       if(isFactoryResetActive === true){
         setIsFactoryResetActive(false);
@@ -128,11 +129,13 @@ const ButtonBar = () => {
 
       document.getElementById("TopAlarmLabel").className = "badge badge-primary";
       document.getElementById("TopAlarmLabel").innerHTML = "Looking for bluetooth connection";
+
       // If factoryReset bool is true we will go through this.factoryDefault state to deep sleep state
       if(isFactoryResetActive === true){
         //setTimer(clearTimeout(timer)); // Clear timer so we dont go back to deep sleep state
         timerGang = setTimeout(() => setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE), 2000); // Deep sleep after 2sec
         disableButton("ConnectWatchToPhone");
+        document.getElementById("TopAlarmLabel").innerHTML = "Passing through Factory default state";
       }
     }
 
@@ -151,8 +154,10 @@ const ButtonBar = () => {
 
       document.getElementById("TopAlarmLabel").className = "badge badge-primary";
       document.getElementById("TopAlarmLabel").innerHTML = "Connected to phone and sensing";
-      // Is we make a factory reset we need to go through this.sensing state to factory default state 
+
+      // If we make a factory reset we need to go through this.sensing state to factory default state 
       if(isFactoryResetActive === true){
+        document.getElementById("TopAlarmLabel").innerHTML = "Passing through Sensing state";
         // Need to clear the above timer since we are using a new timer for isFactoryResetActive mode 
         clearTimeout(timerGang);
         timerGang = setTimeout(() => setCurrentState(ENUMSTATE.FACTORY_DEFAULT_STATE), 2000); // Factory default after 2sec
@@ -243,9 +248,9 @@ const ButtonBar = () => {
       timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENSING_STATE), 2000); // Changes state to Sensing state after 2 sec
       document.getElementById("TopAlarmLabel").className = "badge badge-secondary";
       document.getElementById("TopAlarmLabel").innerHTML = "Resetting Alarm";
-      // if(isFactoryResetActive === true){
-        
-      // }
+      if(isFactoryResetActive === true){
+        document.getElementById("TopAlarmLabel").innerHTML = "Passing through Resetting Alarm state";
+      }
     }
     return (() => {
       clearTimeout(timerGang);
@@ -352,39 +357,40 @@ const ButtonBar = () => {
         onClick={() => handleOnWatchButton_QuickPress()}
         className="btn btn-danger btn-sm btn-Quick-Press m-2"
       >
-        Watch Btn Quick press
+        Alarm btn quick press
       </button>
       <button
         id="ShortHold"
         onClick={() => handleOnWatchButton_ShortHold()}
-        className="btn btn-danger btn-sm btn-Short-Hold m-2"
+        className="btn btn-danger btn-sm btn-Short-Hold m-2 "
+        data-toggle="dropdown"
       >
-        Watch Btn Short hold (2s)
+        Alarm btn short hold (2s)
       </button>
       <button
         id="MediumHold"
         onClick={() => handleOnWatchButton_MediumHold()}
         className="btn btn-danger btn-sm btn-Medium-Hold m-2"
       >
-        Watch Btn Medium hold (10s)
+        Alarm btn medium hold (10s)
       </button>
       <button
         id="LongHold"
         onClick={() => handleOnWatchButton_LongHold()}
         className="btn btn-danger btn-sm btn-Long-Hold m-2"
       >
-        Watch Btn Long hold (30s)
+        Alarm btn medium hold (30s)
       </button>
       {/* Below are all the different state buttons */}
       <br></br>
-      <h1>States are shown below</h1>
+      <h1>States are shown below with current state highlighted</h1>
       <br></br>
       {/* FRÅGA MUSTAFA */}
       {newArrayInsteadOfMap.map((stateBtnObject) => {
         return (
           <StateButton
             id={stateBtnObject.btnId}
-            changeStateOnClick={changeStateOnClick}
+            // changeStateOnClick={changeStateOnClick}
             text={stateBtnObject.textOnBtn}
           />
         );

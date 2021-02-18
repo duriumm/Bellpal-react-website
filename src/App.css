@@ -18,40 +18,34 @@ img {
   text-align: center;
   white-space: normal !important;
   word-wrap: break-word;
+  pointer-events: none;
+  display: inline-block;
+  opacity: 0.5;
 }
 
 .btn-Quick-Press {
-  /* opacity: 0.2;
-  filter: alpha(opacity=20); */
   background-color: #ff9a00 !important;
 
-  /* background-color: #4caf50 imp !important; */
   border-color: #ff9a00 !important;
+}
+.btn-Quick-Press:hover {
+  
 }
 
 .btn-Short-Hold {
-  /* opacity: 0.2;
-  filter: alpha(opacity=20); */
   background-color: #ff7400 !important;
 
-  /* background-color: #4caf50 imp !important; */
   border-color: #ff7400 !important;
 }
 
 .btn-Medium-Hold {
-  /* opacity: 0.2;
-  filter: alpha(opacity=20); */
   background-color: #ff4d00 !important;
 
-  /* background-color: #4caf50 imp !important; */
   border-color: #ff4d00 !important;
 }
 
 .btn-Long-Hold {
-  /* opacity: 0.2;
-  filter: alpha(opacity=20); */
   background-color: #ff0000 !important;
 
-  /* background-color: #4caf50 imp !important; */
   border-color: #ff0000 !important;
 }
