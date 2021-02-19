@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import ButtonBar from './components/buttonBar'
 
+import Tippy from '@tippyjs/react';
+import 'tippy.js/dist/tippy.css'; // optional
+
 
 
 function App() {
