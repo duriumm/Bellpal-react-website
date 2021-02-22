@@ -39,6 +39,7 @@ const ButtonBar = () => {
   //const [timer, setTimer] = useState(null);
   const [isAlarmingFollowers, setIsAlarmingFollowers] = useState(false);
   const [isFactoryResetActive, setIsFactoryResetActive] = useState(false);
+  const [blinkingLEDinterval, setBlinkingLEDinterval] = useState(null); // use this or blinking interval
 
   const initialRender = useRef(true);
 
@@ -273,6 +274,7 @@ const ButtonBar = () => {
 
   const connectWatchToPhone = () => {
     setCurrentState(ENUMSTATE.SENSING_STATE);
+    document.getElementById("bellpalWatchRegular").src ="BellpalWatch_GREEN.png"
   };
   const enableButton = (buttonId) => {
     document.getElementById(buttonId).disabled = false;
@@ -311,6 +313,8 @@ const ButtonBar = () => {
   const simulateAutomaticFallAlarm = () => {
     setCurrentState(ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE);
   };
+
+
   return (
     <div>
      <h2> <span className="badge m-2 badge-dark">{counter}</span> </h2>
@@ -324,113 +328,123 @@ const ButtonBar = () => {
           Hover over each button to get more info</p>
         </h3>
       </div>
+      <div class="btn-group-vertical">
+        <Tippy content={
+          <div>
+            Press this button to simulate an automatic fall alarm triggered by the watch fall algorithm. 
+            This will make the watch enter Notify App Fall Alarm state and continue into Sending Alarm state.
+          </div>}>
+          <button
+            id="SimulateAutomaticFallAlarmBtn"
+            onClick={() => simulateAutomaticFallAlarm()}
+            className="btn btn-warning btn-sm m-2"
+          >
+            Automatic fall alarm
+          </button>
+        </Tippy>
+        <Tippy content={
+          <div>
+            Press this button to simulate that an alarm 
+            has been confirmed by any follower of the wearer
+          </div>}>
+          <button
+            id="ConfirmAlarmBtn"
+            onClick={() => confirmWatchAlarmFromPhone()}
+            className="btn btn-success btn-sm m-2"
+          >
+            Confirm Alarm From Phone
+          </button>
+        </Tippy>
 
-      <Tippy content={
+        <Tippy content={
         <div>
-          Press this button to simulate an automatic fall alarm triggered by the watch fall algorithm. 
-          This will make the watch enter Notify App Fall Alarm state and continue into Sending Alarm state.
+          Press this button to simulate a successful 
+          bluetooth pairing from the watch to a smartphone
         </div>}>
-        <button
-          id="SimulateAutomaticFallAlarmBtn"
-          onClick={() => simulateAutomaticFallAlarm()}
-          className="btn btn-warning btn-sm m-2"
-        >
-          Automatic fall alarm
-        </button>
-      </Tippy>
-      <Tippy content={
-        <div>
-          Press this button to simulate that an alarm 
-          has been confirmed by any follower of the wearer
-        </div>}>
-        <button
-          id="ConfirmAlarmBtn"
-          onClick={() => confirmWatchAlarmFromPhone()}
-          className="btn btn-success btn-sm m-2"
-        >
-          Confirm Alarm From Phone
-        </button>
-      </Tippy>
+          <button
+            id="ConnectWatchToPhone"
+            onClick={() => connectWatchToPhone()}
+            className="btn btn-primary btn-sm m-2"
+          >
+            Connect Watch To Phone
+          </button>
+        </Tippy>
+  
+      </div>
+      
+      <img id="bellpalWatchRegular" src="BellpalWatch.png"></img>
+      
+      {/* BELOW ARE ALL ALARM BUTTONS */}
 
-      <Tippy content={
-      <div>
-        Press this button to simulate a successful 
-        bluetooth pairing from the watch to a smartphone
-      </div>}>
-        <button
-          id="ConnectWatchToPhone"
-          onClick={() => connectWatchToPhone()}
-          className="btn btn-primary btn-sm m-2"
-        >
-          Connect Watch To Phone
-        </button>
-      </Tippy>
+      <div class="btn-group-vertical">
+        <Tippy content={
+          <div>
+            Pressing the alarm button quickly will make the watch go from
+            Deep Sleep state to Factory Default state
+          </div>}>
+          <button
+            id="QuickPress"
+            onClick={() => handleOnWatchButton_QuickPress()}
+            className="btn btn-danger btn-sm btn-Quick-Press m-1"
+          >
+            Alarm btn quick press
+          </button>
+        </Tippy>
 
-      <img src="BellpalWatch.png"></img>
-      <Tippy content={
-        <div>
-          Pressing the alarm button quickly will make the watch go from
-          Deep Sleep state to Factory Default state
-        </div>}>
-        <button
-          id="QuickPress"
-          onClick={() => handleOnWatchButton_QuickPress()}
-          className="btn btn-danger btn-sm btn-Quick-Press m-2"
-        >
-          Alarm btn quick press
-        </button>
-      </Tippy>
+        <Tippy content={
+          <div>
+            Holding the watch alarm button for 2 seconds will initiate the alarm
+            function. This will make the watch enter Notify App Manual Alarm state 
+            and continue to the Sending Alarm state
+          </div>}>
+          <button
+            id="ShortHold"
+            onClick={() => handleOnWatchButton_ShortHold()}
+            className="btn btn-danger btn-sm btn-Short-Hold m-1"
+            data-toggle="dropdown"
+          >
+            Alarm btn short hold (2s)
+          </button>
+        </Tippy>
 
-      <Tippy content={
-        <div>
-          Holding the watch alarm button for 2 seconds will initiate the alarm
-          function. This will make the watch enter Notify App Manual Alarm state 
-          and continue to the Sending Alarm state
-        </div>}>
-        <button
-          id="ShortHold"
-          onClick={() => handleOnWatchButton_ShortHold()}
-          className="btn btn-danger btn-sm btn-Short-Hold m-2 "
-          data-toggle="dropdown"
-        >
-          Alarm btn short hold (2s)
-        </button>
-      </Tippy>
+        <Tippy content={
+          <div>
+            Holding the watch alarm button for 10 seconds will initiate a
+            reset of the ongoing alarm. This will make the watch enter 
+            Resetting State and continue to Sensing State
+          </div>}>
+          <button
+            id="MediumHold"
+            onClick={() => handleOnWatchButton_MediumHold()}
+            className="btn btn-danger btn-sm btn-Medium-Hold m-1"
+          >
+            Alarm btn medium hold (10s)
+          </button>
+        </Tippy>
 
-      <Tippy content={
-        <div>
-          Holding the watch alarm button for 10 seconds will initiate a
-          reset of the ongoing alarm. This will make the watch enter 
-          Resetting State and continue to Sensing State
-        </div>}>
-        <button
-          id="MediumHold"
-          onClick={() => handleOnWatchButton_MediumHold()}
-          className="btn btn-danger btn-sm btn-Medium-Hold m-2"
-        >
-          Alarm btn medium hold (10s)
-        </button>
-      </Tippy>
-
-      <Tippy content={
-        <div>Holding the watch alarm button for 30 seconds will initiate a 
-          factory reset on the watch. This reset will step through several states
-          until finally reaching the Deep Sleep state
-        </div>}>
-        <button
-          id="LongHold"
-          onClick={() => handleOnWatchButton_LongHold()}
-          className="btn btn-danger btn-sm btn-Long-Hold m-2"
-        >
-          Alarm btn medium hold (30s)
-        </button>
-      </Tippy>
+        <Tippy content={
+          <div>Holding the watch alarm button for 30 seconds will initiate a 
+            factory reset on the watch. This reset will step through several states
+            until finally reaching the Deep Sleep state
+          </div>}>
+          <button
+            id="LongHold"
+            onClick={() => handleOnWatchButton_LongHold()}
+            className="btn btn-danger btn-sm btn-Long-Hold m-1"
+          >
+            Alarm btn medium hold (30s)
+          </button>
+        </Tippy>
+  
+      </div>
+      
 
       {/* Below are all the different state buttons */}
+      
       <br></br>
       <h1>States are shown below with the current active state highlighted</h1>
       <br></br>
-      {/* FRÅGA MUSTAFA */}
+      
       {newArrayInsteadOfMap.map((stateBtnObject) => {
         return (
           <StateButton

@@ -23,6 +23,18 @@ img {
   opacity: 0.5;
 }
 
+.LED-light {
+  width: 15px;
+  height: 15px;
+  background-color: #62bd19;
+  border-radius: 50%;
+  position: center;
+  top: 23px;
+  left: 23px;
+}
+
+
+
 .btn-Quick-Press {
   background-color: #ff9a00 !important;
 
@@ -46,5 +58,3 @@ img {
 
   border-color: #ff0000 !important;
 }
-
-
