@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import StateButton from "./stateButton";
 
 import Tippy from '@tippyjs/react';
@@ -17,15 +17,15 @@ const ENUMSTATE = {
 };
 
 const newArrayInsteadOfMap = [
-  { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep"},
-  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying App Fall Alarm"},
-  { btnId: "alarmConfirmedStateBtn", textOnBtn: "Alarm Confirmed"},
-  { btnId: "sensingStateBtn", textOnBtn: "Sensing"},
-  { btnId: "resettingAlarmStateBtn", textOnBtn: "Resetting Alarm"},
-  { btnId: "sendingAlarmStateBtn", textOnBtn: "Sending Alarm"},
-  { btnId: "factoryDefaultStateBtn", textOnBtn: "Factory Default"},
-  { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "Notify App Manual Alarm"},
-  { btnId: "deepSleepStateBtn", textOnBtn: "Deep Sleep"} 
+  { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep" },
+  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying App Fall Alarm" },
+  { btnId: "alarmConfirmedStateBtn", textOnBtn: "Alarm Confirmed" },
+  { btnId: "sensingStateBtn", textOnBtn: "Sensing" },
+  { btnId: "resettingAlarmStateBtn", textOnBtn: "Resetting Alarm" },
+  { btnId: "sendingAlarmStateBtn", textOnBtn: "Sending Alarm" },
+  { btnId: "factoryDefaultStateBtn", textOnBtn: "Factory Default" },
+  { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "Notify App Manual Alarm" },
+  { btnId: "deepSleepStateBtn", textOnBtn: "Deep Sleep" }
 ];
 
 
@@ -48,26 +48,26 @@ const ButtonBar = () => {
   // Detta för att inte sätta label till "alarm sent to followers" från start.
   // 
   useEffect(() => {
-    
+
     // On FIRST render of the webpage we set initialRender to false and return
     // Otherwise this useEffect() acts on the isAlarmingFollowers === true
     if (initialRender.current) {
       initialRender.current = false;
       return;
-    } 
-    else if(isAlarmingFollowers === true){
+    }
+    else if (isAlarmingFollowers === true) {
       console.log("We acted on isAlarmingFollowers");
       //setTimer(clearTimeout(timer)); // THIS DOESNT ACTUALLY CLEAR ANYTHINGs
       document.getElementById("TopAlarmLabel").className = "badge badge-danger";
       document.getElementById("TopAlarmLabel").innerHTML = "Alarm sent to followers!";
-  
-      clearInterval(intervalId); 
+
+      clearInterval(intervalId);
       setCounter(0);
       enableButton("ConfirmAlarmBtn");
 
       setIsAlarmingFollowers(false);
-    }  
-    else{
+    }
+    else {
       console.log("We DID NOT act on isAlarmingFollowers");
     }
   }, [isAlarmingFollowers]);
@@ -79,38 +79,38 @@ const ButtonBar = () => {
   const changeOpacityOnStateButton = (buttonId) => {
     if (previousButton != null) { document.getElementById(previousButton).style.opacity = 0.5; }
     document.getElementById(buttonId).style.opacity = 1.0;
-    setPreviousButton(buttonId); 
+    setPreviousButton(buttonId);
   };
 
   // Enable and Disable buttons each time currentState is being changed
   useEffect(() => {
 
     let timerGang;
-    if(currentState === ENUMSTATE.DEEP_SLEEP_STATE){
+    if (currentState === ENUMSTATE.DEEP_SLEEP_STATE) {
 
       changeOpacityOnStateButton("deepSleepStateBtn");
-      disableButton("ConfirmAlarmBtn"); 
+      disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
       enableButton("QuickPress"); // Enters factory default
       disableButton("ShortHold");
       disableButton("MediumHold");
       disableButton("LongHold");
       disableButton("SimulateAutomaticFallAlarmBtn");
-      
+
 
       document.getElementById("TopAlarmLabel").className = "badge badge-dark";
       document.getElementById("TopAlarmLabel").innerHTML = "In deep sleep mode";
 
       // Resetting the factoryReset bool to not get stuck in deep sleep state
-      if(isFactoryResetActive === true){  setIsFactoryResetActive(false); }
+      if (isFactoryResetActive === true) { setIsFactoryResetActive(false); }
     }
-    else if(currentState === ENUMSTATE.FACTORY_DEFAULT_STATE){
+    else if (currentState === ENUMSTATE.FACTORY_DEFAULT_STATE) {
 
       changeOpacityOnStateButton("factoryDefaultStateBtn");
       // TO-DO - Make watch LED blink accordingly to state (blue,null)
       timerGang = setTimeout(() => setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE), 10000);// Changes back to deepSleep state after 10 sec // CHANGE TO 120 SEC
 
-      disableButton("ConfirmAlarmBtn"); 
+      disableButton("ConfirmAlarmBtn");
       enableButton("ConnectWatchToPhone");
       disableButton("QuickPress");
       disableButton("ShortHold");
@@ -122,7 +122,7 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Looking for bluetooth connection";
 
       // If factoryReset bool is true we will go through this.factoryDefault state to deep sleep state
-      if(isFactoryResetActive === true){
+      if (isFactoryResetActive === true) {
         // Need to clear the above timer timerGang since we are using a new timer for isFactoryResetActive mode 
         clearTimeout(timerGang);
         timerGang = setTimeout(() => setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE), 2000); // Deep sleep after 2sec
@@ -130,12 +130,12 @@ const ButtonBar = () => {
         document.getElementById("TopAlarmLabel").innerHTML = "Passing through Factory default state";
       }
     }
-    else if(currentState === ENUMSTATE.SENSING_STATE){
+    else if (currentState === ENUMSTATE.SENSING_STATE) {
 
       timerGang = setTimeout(() => setCurrentState(ENUMSTATE.LIGHT_SLEEP_STATE), 10000); // Changes state to lightSleep after 10 sec (inactivity)// CHANGE TO 120 SEC
 
       changeOpacityOnStateButton("sensingStateBtn");
-      disableButton("ConfirmAlarmBtn"); 
+      disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  // Man får grönt ljus men ingen action
       enableButton("ShortHold");    // Man får grönt ljus och vid 10s trigarr man manual alarm
@@ -147,7 +147,7 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Connected to phone and sensing";
 
       // If we make a factory reset we need to go through this.sensing state to factory default state 
-      if(isFactoryResetActive === true){
+      if (isFactoryResetActive === true) {
         document.getElementById("TopAlarmLabel").innerHTML = "Passing through Sensing state";
         // Need to clear the above timer since we are using a new timer for isFactoryResetActive mode 
         clearTimeout(timerGang);
@@ -156,9 +156,9 @@ const ButtonBar = () => {
         disableButton("LongHold");     // On factory reset we need to disable all buttons
       }
     }
-    else if(currentState === ENUMSTATE.LIGHT_SLEEP_STATE){
+    else if (currentState === ENUMSTATE.LIGHT_SLEEP_STATE) {
       changeOpacityOnStateButton("lightSleepStateBtn");
-      disableButton("ConfirmAlarmBtn"); 
+      disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");  // Man får grönt ljus men ingen action
       enableButton("ShortHold");    // Man får grönt ljus och vid 10s trigarr man manual alarm
@@ -169,57 +169,57 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").className = "badge badge-dark";
       document.getElementById("TopAlarmLabel").innerHTML = "Light sleeping mode active";
     }
-    else if(currentState === ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE){
+    else if (currentState === ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE) {
       changeOpacityOnStateButton("notifyingAppFallAlarmStateBtn");
-      disableButton("ConfirmAlarmBtn"); 
+      disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
-      disableButton("QuickPress");  
+      disableButton("QuickPress");
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
       disableButton("SimulateAutomaticFallAlarmBtn");
 
       // 3 second timer before we enter Sending alarm state
-      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), 3000); 
+      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), 3000);
 
       document.getElementById("TopAlarmLabel").className = "badge badge-info";
       document.getElementById("TopAlarmLabel").innerHTML = "Trying to send automatic fall alarm to phone";
     }
-    else if(currentState === ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE){
+    else if (currentState === ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE) {
       changeOpacityOnStateButton("notifyingAppManualAlarmStateBtn");
-      disableButton("ConfirmAlarmBtn"); 
+      disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
-      disableButton("QuickPress");  
+      disableButton("QuickPress");
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
       disableButton("SimulateAutomaticFallAlarmBtn");
 
       // 3 second timer before we enter Sending alarm state
-      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), 3000); 
+      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), 3000);
 
       document.getElementById("TopAlarmLabel").className = "badge badge-info";
       document.getElementById("TopAlarmLabel").innerHTML = "Trying to send manual alarm to phone";
     }
-    else if(currentState === ENUMSTATE.SENDING_ALARM_STATE){
+    else if (currentState === ENUMSTATE.SENDING_ALARM_STATE) {
       changeOpacityOnStateButton("sendingAlarmStateBtn");
       disableButton("ConnectWatchToPhone");
-      disableButton("QuickPress");  
+      disableButton("QuickPress");
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
       disableButton("SimulateAutomaticFallAlarmBtn");
-      
-      timerGang = startAlarmCounter(); 
-      
+
+      timerGang = startAlarmCounter();
+
       document.getElementById("TopAlarmLabel").className = "badge badge-warning";
       document.getElementById("TopAlarmLabel").innerHTML = "App received alarm from watch, 30sec before alarm is sent to followers";
     }
-    else if(currentState === ENUMSTATE.ALARM_CONFIRMED_STATE){
+    else if (currentState === ENUMSTATE.ALARM_CONFIRMED_STATE) {
       changeOpacityOnStateButton("alarmConfirmedStateBtn");
-      disableButton("ConfirmAlarmBtn");     
+      disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
-      disableButton("QuickPress");  
+      disableButton("QuickPress");
       disableButton("ShortHold");
       enableButton("MediumHold");   // Reset alarm
       enableButton("LongHold");     // Factory reset watch
@@ -228,25 +228,25 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").className = "badge badge-success";
       document.getElementById("TopAlarmLabel").innerHTML = "Alarm confirmed by follower";
     }
-    else if(currentState === ENUMSTATE.RESETTING_ALARM_STATE){
+    else if (currentState === ENUMSTATE.RESETTING_ALARM_STATE) {
       setAlarmed(false);
-      clearInterval(intervalId); 
+      clearInterval(intervalId);
       setCounter(0);
 
       changeOpacityOnStateButton("resettingAlarmStateBtn");
-      disableButton("ConfirmAlarmBtn"); 
+      disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
-      disableButton("QuickPress");  
+      disableButton("QuickPress");
       disableButton("ShortHold");
-      disableButton("MediumHold");   
-      disableButton("LongHold");    
+      disableButton("MediumHold");
+      disableButton("LongHold");
       disableButton("SimulateAutomaticFallAlarmBtn");
       // if isFactoryResetActive === true we need to go through sensing state towards deep sleep state. Although we
       // ALWAYS go to sensing state from reset state so here it is not a problem.
       timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENSING_STATE), 2000); // Changes state to Sensing state after 2 sec
       document.getElementById("TopAlarmLabel").className = "badge badge-secondary";
       document.getElementById("TopAlarmLabel").innerHTML = "Resetting Alarm";
-      if(isFactoryResetActive === true){
+      if (isFactoryResetActive === true) {
         document.getElementById("TopAlarmLabel").innerHTML = "Passing through Resetting Alarm state";
       }
     }
@@ -254,7 +254,7 @@ const ButtonBar = () => {
       // Each time currentSTate is being modified we clear the timer timerGang
       clearTimeout(timerGang);
     });
-  },[currentState]);
+  }, [currentState]);
 
 
   const startAlarmCounter = () => {
@@ -274,7 +274,7 @@ const ButtonBar = () => {
 
   const connectWatchToPhone = () => {
     setCurrentState(ENUMSTATE.SENSING_STATE);
-    document.getElementById("bellpalWatchRegular").src ="BellpalWatch_GREEN.png"
+    document.getElementById("bellpalWatchRegular").src = "BellpalWatch_GREEN.png"
   };
   const enableButton = (buttonId) => {
     document.getElementById(buttonId).disabled = false;
@@ -284,7 +284,7 @@ const ButtonBar = () => {
     document.getElementById(buttonId).disabled = true;
     document.getElementById(buttonId).style.fontWeight = "normal";
   };
-  
+
   const handleOnWatchButton_QuickPress = () => {
     // This buttonpress lights up a green dot on the watch on some states. TO-DO - for later
     setCurrentState(ENUMSTATE.FACTORY_DEFAULT_STATE);
@@ -292,11 +292,11 @@ const ButtonBar = () => {
 
   // Short hold(2s) will trigger manual alarm but ONLY if watch is not already alarmed
   const handleOnWatchButton_ShortHold = () => {
-    if(alarmed === false && (currentState === ENUMSTATE.LIGHT_SLEEP_STATE || currentState === ENUMSTATE.SENSING_STATE)){
+    if (alarmed === false && (currentState === ENUMSTATE.LIGHT_SLEEP_STATE || currentState === ENUMSTATE.SENSING_STATE)) {
       setCurrentState(ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE);
       // TO-DO - Make an "Automatic fall alarm button" available in light sleep and sensing state
     }
-    else{ console.log("TEST well well well alarmed is: "+alarmed);  }
+    else { console.log("TEST well well well alarmed is: " + alarmed); }
   };
 
   // Medium hold(10s) will reset the current alarm
@@ -317,12 +317,12 @@ const ButtonBar = () => {
 
   return (
     <div>
-     <h2> <span className="badge m-2 badge-dark">{counter}</span> </h2>
+      <h2> <span className="badge m-2 badge-dark">{counter}</span> </h2>
       <div>
         <h3> <p className="badge m-2 badge-primary" id="TopAlarmLabel">Alarm is not active</p> </h3>
       </div>
       <div>
-        <h3> 
+        <h3>
           <p className="badge m-2 badge-light" id="TopAlarmLabel">Simulations of actions like connecting the<br></br>watch to a smartphone are located on the left side</p>
           <p className="badge m-2 badge-light" id="TopAlarmLabel">The watches alarm button interractions are<br></br>located on the right side here below.<br></br>
           Hover over each button to get more info</p>
@@ -331,7 +331,7 @@ const ButtonBar = () => {
       <div class="btn-group-vertical">
         <Tippy content={
           <div>
-            Press this button to simulate an automatic fall alarm triggered by the watch fall algorithm. 
+            Press this button to simulate an automatic fall alarm triggered by the watch fall algorithm.
             This will make the watch enter Notify App Fall Alarm state and continue into Sending Alarm state.
           </div>}>
           <button
@@ -344,7 +344,7 @@ const ButtonBar = () => {
         </Tippy>
         <Tippy content={
           <div>
-            Press this button to simulate that an alarm 
+            Press this button to simulate that an alarm
             has been confirmed by any follower of the wearer
           </div>}>
           <button
@@ -357,9 +357,9 @@ const ButtonBar = () => {
         </Tippy>
 
         <Tippy content={
-        <div>
-          Press this button to simulate a successful 
-          bluetooth pairing from the watch to a smartphone
+          <div>
+            Press this button to simulate a successful
+            bluetooth pairing from the watch to a smartphone
         </div>}>
           <button
             id="ConnectWatchToPhone"
@@ -369,11 +369,11 @@ const ButtonBar = () => {
             Connect Watch To Phone
           </button>
         </Tippy>
-  
+
       </div>
-      
+
       <img id="bellpalWatchRegular" src="BellpalWatch.png"></img>
-      
+
       {/* BELOW ARE ALL ALARM BUTTONS */}
 
       <div class="btn-group-vertical">
@@ -394,7 +394,7 @@ const ButtonBar = () => {
         <Tippy content={
           <div>
             Holding the watch alarm button for 2 seconds will initiate the alarm
-            function. This will make the watch enter Notify App Manual Alarm state 
+            function. This will make the watch enter Notify App Manual Alarm state
             and continue to the Sending Alarm state
           </div>}>
           <button
@@ -410,7 +410,7 @@ const ButtonBar = () => {
         <Tippy content={
           <div>
             Holding the watch alarm button for 10 seconds will initiate a
-            reset of the ongoing alarm. This will make the watch enter 
+            reset of the ongoing alarm. This will make the watch enter
             Resetting State and continue to Sensing State
           </div>}>
           <button
@@ -423,9 +423,9 @@ const ButtonBar = () => {
         </Tippy>
 
         <Tippy content={
-          <div>Holding the watch alarm button for 30 seconds will initiate a 
-            factory reset on the watch. This reset will step through several states
-            until finally reaching the Deep Sleep state
+          <div>Holding the watch alarm button for 30 seconds will initiate a
+          factory reset on the watch. This reset will step through several states
+          until finally reaching the Deep Sleep state
           </div>}>
           <button
             id="LongHold"
@@ -435,16 +435,16 @@ const ButtonBar = () => {
             Alarm btn medium hold (30s)
           </button>
         </Tippy>
-  
+
       </div>
-      
+
 
       {/* Below are all the different state buttons */}
-      
+
       <br></br>
       <h1>States are shown below with the current active state highlighted</h1>
       <br></br>
-      
+
       {newArrayInsteadOfMap.map((stateBtnObject) => {
         return (
           <StateButton
