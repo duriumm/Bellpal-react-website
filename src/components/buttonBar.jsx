@@ -602,6 +602,8 @@ const ButtonBar = () => {
 
           }}
         /> */}
+
+
         <StateArrow
           fromState="MediumHold"
           toState="ConfirmAlarmBtn"
