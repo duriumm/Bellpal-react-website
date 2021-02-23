@@ -1,16 +1,17 @@
 import React from "react";
 
-const StateButton = ({ id, changeStateOnClick, text}) => {
+const StateButton = ({ id, text }) => {
   return (
     <button
       id={id}
-      // onClick={() => changeStateOnClick(id)} // NOT NEEDED
       type="button"
-      className="btn btn-primary btn-circle btn-xl m-2 shadow-none"
-      // Style skriver över app.css styles :)
+      className="btn btn-circle btn-xl m-4 shadow-none"
+      style={{ color: "black" }}
+    // Style skriver över app.css styles :)
     >
       {text}
     </button>
+
   );
 };
 

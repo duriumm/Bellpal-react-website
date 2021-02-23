@@ -5,6 +5,70 @@
 /*  bellpalbildens stats här */
 img {
   height: 200px;
+
+  padding: 20px 2px;
+  border-radius: 55px;
+
+}
+
+.arrow {
+  pointer-events: none;
+}
+
+.arrow__path {
+  stroke: #000;
+  fill: transparent;
+  stroke-width: 2px;
+}
+
+.arrow__head line {
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+#navbarRight {
+  display: flex;
+  justify-content: space-around;
+  /* textColor below */
+  color:#FFEAD0;   
+  background-color: #113537 !important;
+  
+}
+
+#navbarLeft {
+  display: flex;
+  justify-content: space-around;
+  /* textColor below */
+  color:#FFEAD0;   
+  background-color: #37505C !important;
+  /* below is border enabling. remember to add styling to border in general code */
+  /* border-color: #FFEAD0 !important;
+  border-width:thick !important;  */
+
+}
+
+#container {
+  display: flex;
+  margin: 0 auto;
+  width: 1200px;;
+  height: 100%;
+  justify-content: center;
+  
+  
+}
+
+#leftSide {
+  background: #113537;
+  width: 1000px;
+  height: 700px;
+  opacity: 70%;
+}
+
+#rightSide {
+  background: #37505C;
+  width: 1000px;
+  height: 700px;
+  opacity: 70%;
 }
 
 /*  specs for cirle button */
@@ -20,7 +84,9 @@ img {
   word-wrap: break-word;
   pointer-events: none;
   display: inline-block;
-  opacity: 0.5;
+  opacity: 0.3;
+  background-color: #FFEAD0;
+  border-color: #FFEAD0;
 }
 
 .LED-light {

@@ -9,11 +9,14 @@ import 'tippy.js/dist/tippy.css'; // optional
 
 function App() {
   return (
-    <div className="App">
-      <h5>Alarm counter</h5>
+    <div
+      className="App"
+    // style={{ backgroundColor: "#FFEAD0" }}
+    >
+
       <ButtonBar />
-      
-    </div> 
+
+    </div>
   );
 }
 

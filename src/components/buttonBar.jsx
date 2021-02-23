@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Fragment } from "react";
 import StateButton from "./stateButton";
-
+import StateArrow from "./stateArrow";
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
+
+import Arrow, { DIRECTION, HEAD } from "react-arrows"
+
+
+
+
 
 const ENUMSTATE = {
   SENSING_STATE: "SENSING_STATE", // 0
@@ -28,6 +34,28 @@ const newArrayInsteadOfMap = [
   { btnId: "deepSleepStateBtn", textOnBtn: "Deep Sleep" }
 ];
 
+const topBtnArray = [
+  { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep" },
+  { btnId: "EMPTYBTN1", textOnBtn: "" },
+  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying App Fall Alarm" }
+];
+const midTopBtnArray = [
+  { btnId: "sensingStateBtn", textOnBtn: "Sensing" },
+  { btnId: "alarmConfirmedStateBtn", textOnBtn: "Alarm Confirmed" },
+  { btnId: "EMPTYBTN2", textOnBtn: "" }
+];
+const midBtnArray = [
+  { btnId: "factoryDefaultStateBtn", textOnBtn: "Factory Default" },
+  { btnId: "resettingAlarmStateBtn", textOnBtn: "Resetting Alarm" },
+  { btnId: "sendingAlarmStateBtn", textOnBtn: "Sending Alarm" }
+];
+const botBtnArray = [
+  { btnId: "deepSleepStateBtn", textOnBtn: "Deep Sleep" },
+
+  { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "Notify App Manual Alarm" },
+  { btnId: "EMPTYBTN3", textOnBtn: "" }
+];
+
 
 const ButtonBar = () => {
 
@@ -36,13 +64,42 @@ const ButtonBar = () => {
   const [intervalId, setIntervalId] = useState(null);
   const [currentState, setCurrentState] = useState(ENUMSTATE.DEEP_SLEEP_STATE); // Sätts denna på varje re-render
   const [previousButton, setPreviousButton] = useState(null);
-  //const [timer, setTimer] = useState(null);
+
   const [isAlarmingFollowers, setIsAlarmingFollowers] = useState(false);
   const [isFactoryResetActive, setIsFactoryResetActive] = useState(false);
-  const [blinkingLEDinterval, setBlinkingLEDinterval] = useState(null); // use this or blinking interval
+  const [blinkingLEDintervalId, setBlinkingLEDintervalId] = useState(null); // use this or blinking interval
 
   const initialRender = useRef(true);
 
+  const switchImages = (stringOfPicToChange) => {
+    let imgToChangeId = document.getElementById("bellpalWatchRegular"); // Id of img 2 changge
+
+    if (imgToChangeId.getAttribute("src") == "BellpalWatch.png") {
+      imgToChangeId.src = stringOfPicToChange;
+    }
+    else if (imgToChangeId.getAttribute("src") == stringOfPicToChange) {
+      imgToChangeId.src = "BellpalWatch.png";
+    }
+    else {
+      console.log("WROOONG");
+    }
+    let allPics = ["BellpalWatch.png", "BellpalWatch_GREEN.png", "BellpalWatch_BLUE.png", "BellpalWatch_RED.png"];
+  }
+
+
+
+  const startBlinking = (stringOfPicToChange) => {
+    // Clear previous interval and set the render image to original bellpalWatch image without LED light
+    clearInterval(blinkingLEDintervalId);
+    let imgToChangeId = document.getElementById("bellpalWatchRegular"); // Id of img 2 changge
+    imgToChangeId.src = "BellpalWatch.png";
+
+    // Start interval with specific id and switch image between original BP image and color changed BP image
+    const blinkLEDId = setInterval(() => {
+      switchImages(stringOfPicToChange);
+    }, 1000);
+    setBlinkingLEDintervalId(blinkLEDId);
+  }
   // Denna useEffect tittar om det är första render av websidan. 
   // Är det första gången så returnerar vi. Annars kör vi på som vanligt.
   // Detta för att inte sätta label till "alarm sent to followers" från start.
@@ -53,6 +110,9 @@ const ButtonBar = () => {
     // Otherwise this useEffect() acts on the isAlarmingFollowers === true
     if (initialRender.current) {
       initialRender.current = false;
+      document.getElementById("EMPTYBTN1").style.opacity = 0; // renderes the empty button invisible
+      document.getElementById("EMPTYBTN2").style.opacity = 0; // renderes the empty button invisible
+      document.getElementById("EMPTYBTN3").style.opacity = 0; // renderes the empty button invisible
       return;
     }
     else if (isAlarmingFollowers === true) {
@@ -77,7 +137,7 @@ const ButtonBar = () => {
   };
 
   const changeOpacityOnStateButton = (buttonId) => {
-    if (previousButton != null) { document.getElementById(previousButton).style.opacity = 0.5; }
+    if (previousButton != null) { document.getElementById(previousButton).style.opacity = 0.3; }
     document.getElementById(buttonId).style.opacity = 1.0;
     setPreviousButton(buttonId);
   };
@@ -87,6 +147,8 @@ const ButtonBar = () => {
 
     let timerGang;
     if (currentState === ENUMSTATE.DEEP_SLEEP_STATE) {
+      document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
+      clearInterval(blinkingLEDintervalId);
 
       changeOpacityOnStateButton("deepSleepStateBtn");
       disableButton("ConfirmAlarmBtn");
@@ -105,6 +167,11 @@ const ButtonBar = () => {
       if (isFactoryResetActive === true) { setIsFactoryResetActive(false); }
     }
     else if (currentState === ENUMSTATE.FACTORY_DEFAULT_STATE) {
+      if (isFactoryResetActive === false) {
+        startBlinking("BellpalWatch_BLUE.png");
+      }
+
+
 
       changeOpacityOnStateButton("factoryDefaultStateBtn");
       // TO-DO - Make watch LED blink accordingly to state (blue,null)
@@ -125,12 +192,15 @@ const ButtonBar = () => {
       if (isFactoryResetActive === true) {
         // Need to clear the above timer timerGang since we are using a new timer for isFactoryResetActive mode 
         clearTimeout(timerGang);
+        clearInterval(blinkingLEDintervalId); // Clearing this so we dont blink as we pass towards deep sleep state
         timerGang = setTimeout(() => setCurrentState(ENUMSTATE.DEEP_SLEEP_STATE), 2000); // Deep sleep after 2sec
         disableButton("ConnectWatchToPhone");
         document.getElementById("TopAlarmLabel").innerHTML = "Passing through Factory default state";
       }
     }
     else if (currentState === ENUMSTATE.SENSING_STATE) {
+      document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
+      clearInterval(blinkingLEDintervalId);
 
       timerGang = setTimeout(() => setCurrentState(ENUMSTATE.LIGHT_SLEEP_STATE), 10000); // Changes state to lightSleep after 10 sec (inactivity)// CHANGE TO 120 SEC
 
@@ -148,15 +218,19 @@ const ButtonBar = () => {
 
       // If we make a factory reset we need to go through this.sensing state to factory default state 
       if (isFactoryResetActive === true) {
+        clearInterval(blinkingLEDintervalId); // Clearing this so we dont blink as we pass towards deep sleep state
         document.getElementById("TopAlarmLabel").innerHTML = "Passing through Sensing state";
         // Need to clear the above timer since we are using a new timer for isFactoryResetActive mode 
         clearTimeout(timerGang);
         timerGang = setTimeout(() => setCurrentState(ENUMSTATE.FACTORY_DEFAULT_STATE), 2000); // Factory default after 2sec 
         disableButton("ShortHold");    // On factory reset we need to disable all buttons
         disableButton("LongHold");     // On factory reset we need to disable all buttons
+        disableButton("SimulateAutomaticFallAlarmBtn");
       }
     }
     else if (currentState === ENUMSTATE.LIGHT_SLEEP_STATE) {
+      document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
+      clearInterval(blinkingLEDintervalId);
       changeOpacityOnStateButton("lightSleepStateBtn");
       disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
@@ -170,6 +244,7 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Light sleeping mode active";
     }
     else if (currentState === ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE) {
+      startBlinking("BellpalWatch_RED.png");
       changeOpacityOnStateButton("notifyingAppFallAlarmStateBtn");
       disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
@@ -186,6 +261,7 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Trying to send automatic fall alarm to phone";
     }
     else if (currentState === ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE) {
+      startBlinking("BellpalWatch_RED.png");
       changeOpacityOnStateButton("notifyingAppManualAlarmStateBtn");
       disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
@@ -202,6 +278,7 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Trying to send manual alarm to phone";
     }
     else if (currentState === ENUMSTATE.SENDING_ALARM_STATE) {
+      startBlinking("BellpalWatch_RED.png");
       changeOpacityOnStateButton("sendingAlarmStateBtn");
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");
@@ -213,9 +290,10 @@ const ButtonBar = () => {
       timerGang = startAlarmCounter();
 
       document.getElementById("TopAlarmLabel").className = "badge badge-warning";
-      document.getElementById("TopAlarmLabel").innerHTML = "App received alarm from watch, 30sec before alarm is sent to followers";
+      document.getElementById("TopAlarmLabel").innerHTML = "Alarm sent, 30sec before alarm is sent to followers";
     }
     else if (currentState === ENUMSTATE.ALARM_CONFIRMED_STATE) {
+      startBlinking("BellpalWatch_GREEN.png");
       changeOpacityOnStateButton("alarmConfirmedStateBtn");
       disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
@@ -229,6 +307,8 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Alarm confirmed by follower";
     }
     else if (currentState === ENUMSTATE.RESETTING_ALARM_STATE) {
+      document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
+      clearInterval(blinkingLEDintervalId);
       setAlarmed(false);
       clearInterval(intervalId);
       setCounter(0);
@@ -274,7 +354,7 @@ const ButtonBar = () => {
 
   const connectWatchToPhone = () => {
     setCurrentState(ENUMSTATE.SENSING_STATE);
-    document.getElementById("bellpalWatchRegular").src = "BellpalWatch_GREEN.png"
+
   };
   const enableButton = (buttonId) => {
     document.getElementById(buttonId).disabled = false;
@@ -314,148 +394,224 @@ const ButtonBar = () => {
     setCurrentState(ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE);
   };
 
-
   return (
     <div>
-      <h2> <span className="badge m-2 badge-dark">{counter}</span> </h2>
-      <div>
-        <h3> <p className="badge m-2 badge-primary" id="TopAlarmLabel">Alarm is not active</p> </h3>
-      </div>
-      <div>
-        <h3>
-          <p className="badge m-2 badge-light" id="TopAlarmLabel">Simulations of actions like connecting the<br></br>watch to a smartphone are located on the left side</p>
-          <p className="badge m-2 badge-light" id="TopAlarmLabel">The watches alarm button interractions are<br></br>located on the right side here below.<br></br>
-          Hover over each button to get more info</p>
-        </h3>
-      </div>
-      <div class="btn-group-vertical">
-        <Tippy content={
-          <div>
-            Press this button to simulate an automatic fall alarm triggered by the watch fall algorithm.
-            This will make the watch enter Notify App Fall Alarm state and continue into Sending Alarm state.
-          </div>}>
-          <button
-            id="SimulateAutomaticFallAlarmBtn"
-            onClick={() => simulateAutomaticFallAlarm()}
-            className="btn btn-warning btn-sm m-2"
-          >
-            Automatic fall alarm
-          </button>
-        </Tippy>
-        <Tippy content={
-          <div>
-            Press this button to simulate that an alarm
-            has been confirmed by any follower of the wearer
-          </div>}>
-          <button
-            id="ConfirmAlarmBtn"
-            onClick={() => confirmWatchAlarmFromPhone()}
-            className="btn btn-success btn-sm m-2"
-          >
-            Confirm Alarm From Phone
-          </button>
-        </Tippy>
-
-        <Tippy content={
-          <div>
-            Press this button to simulate a successful
-            bluetooth pairing from the watch to a smartphone
-        </div>}>
-          <button
-            id="ConnectWatchToPhone"
-            onClick={() => connectWatchToPhone()}
-            className="btn btn-primary btn-sm m-2"
-          >
-            Connect Watch To Phone
-          </button>
-        </Tippy>
-
-      </div>
-
-      <img id="bellpalWatchRegular" src="BellpalWatch.png"></img>
-
-      {/* BELOW ARE ALL ALARM BUTTONS */}
-
-      <div class="btn-group-vertical">
-        <Tippy content={
-          <div>
-            Pressing the alarm button quickly will make the watch go from
-            Deep Sleep state to Factory Default state
-          </div>}>
-          <button
-            id="QuickPress"
-            onClick={() => handleOnWatchButton_QuickPress()}
-            className="btn btn-danger btn-sm btn-Quick-Press m-1"
-          >
-            Alarm btn quick press
-          </button>
-        </Tippy>
-
-        <Tippy content={
-          <div>
-            Holding the watch alarm button for 2 seconds will initiate the alarm
-            function. This will make the watch enter Notify App Manual Alarm state
-            and continue to the Sending Alarm state
-          </div>}>
-          <button
-            id="ShortHold"
-            onClick={() => handleOnWatchButton_ShortHold()}
-            className="btn btn-danger btn-sm btn-Short-Hold m-1"
-            data-toggle="dropdown"
-          >
-            Alarm btn short hold (2s)
-          </button>
-        </Tippy>
-
-        <Tippy content={
-          <div>
-            Holding the watch alarm button for 10 seconds will initiate a
-            reset of the ongoing alarm. This will make the watch enter
-            Resetting State and continue to Sensing State
-          </div>}>
-          <button
-            id="MediumHold"
-            onClick={() => handleOnWatchButton_MediumHold()}
-            className="btn btn-danger btn-sm btn-Medium-Hold m-1"
-          >
-            Alarm btn medium hold (10s)
-          </button>
-        </Tippy>
-
-        <Tippy content={
-          <div>Holding the watch alarm button for 30 seconds will initiate a
-          factory reset on the watch. This reset will step through several states
-          until finally reaching the Deep Sleep state
-          </div>}>
-          <button
-            id="LongHold"
-            onClick={() => handleOnWatchButton_LongHold()}
-            className="btn btn-danger btn-sm btn-Long-Hold m-1"
-          >
-            Alarm btn medium hold (30s)
-          </button>
-        </Tippy>
-
-      </div>
 
 
       {/* Below are all the different state buttons */}
 
-      <br></br>
-      <h1>States are shown below with the current active state highlighted</h1>
-      <br></br>
-
-      {newArrayInsteadOfMap.map((stateBtnObject) => {
+      {/* {newArrayInsteadOfMap.map((stateBtnObject) => {
         return (
           <StateButton
             id={stateBtnObject.btnId}
-            // changeStateOnClick={changeStateOnClick}
+            // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
             text={stateBtnObject.textOnBtn}
           />
         );
-      })}
+      })} */}
+      <div id="container">
+        <div id="leftSide">
+          <nav id="navbarLeft" class="navbar navbar-dark bg-primary" style={{ border: "" }}>Alarm buttons</nav>
+          <h2> <span className="badge m-2 badge-light">{counter}</span> </h2>
+          <div>
+            <h3> <p className="badge m-2 badge-primary" id="TopAlarmLabel">Alarm is not active</p> </h3>
+          </div>
+          <div>
+            {/* <h3>
+              <p className="badge m-2 badge-light" id="TopAlarmLabel">Simulations of actions like connecting the<br></br>watch to a smartphone are located on the left side</p>
+              <p className="badge m-2 badge-light" id="TopAlarmLabel">The watches alarm button interractions are<br></br>located on the right side here below.<br></br>
+              Hover over each button to get more info</p>
+            </h3> */}
+          </div>
+          <div class="btn-group-vertical">
+            <Tippy content={
+              <div>
+                Press this button to simulate an automatic fall alarm triggered by the watch fall algorithm.
+                This will make the watch enter Notify App Fall Alarm state and continue into Sending Alarm state.
+              </div>}>
+              <button
+                id="SimulateAutomaticFallAlarmBtn"
+                onClick={() => simulateAutomaticFallAlarm()}
+                className="btn btn-warning btn-sm m-2"
+              >
+                Automatic fall alarm
+              </button>
+            </Tippy>
+            <Tippy content={
+              <div>
+                Press this button to simulate that an alarm
+                has been confirmed by any follower of the wearer
+              </div>}>
+              <button
+                id="ConfirmAlarmBtn"
+                onClick={() => confirmWatchAlarmFromPhone()}
+                className="btn btn-success btn-sm m-2"
+              >
+                Confirm Alarm From Phone
+              </button>
+            </Tippy>
 
+            <Tippy content={
+              <div>
+                Press this button to simulate a successful
+                bluetooth pairing from the watch to a smartphone
+            </div>}>
+              <button
+                id="ConnectWatchToPhone"
+                onClick={() => connectWatchToPhone()}
+                className="btn btn-primary btn-sm m-2"
+              >
+                Connect Watch To Phone
+              </button>
+            </Tippy>
+
+          </div>
+
+          <img id="bellpalWatchRegular" src="BellpalWatch.png"></img>
+
+          {/* BELOW ARE ALL ALARM BUTTONS */}
+
+          <div class="btn-group-vertical">
+            <Tippy content={
+              <div>
+                Pressing the alarm button quickly will make the watch go from
+                Deep Sleep state to Factory Default state
+              </div>}>
+              <button
+                id="QuickPress"
+                onClick={() => handleOnWatchButton_QuickPress()}
+                className="btn btn-danger btn-sm btn-Quick-Press m-1"
+              >
+                Alarm btn quick press
+              </button>
+            </Tippy>
+
+            <Tippy content={
+              <div>
+                Holding the watch alarm button for 2 seconds will initiate the alarm
+                function. This will make the watch enter Notify App Manual Alarm state
+                and continue to the Sending Alarm state
+              </div>}>
+              <button
+                id="ShortHold"
+                onClick={() => handleOnWatchButton_ShortHold()}
+                className="btn btn-danger btn-sm btn-Short-Hold m-1"
+                data-toggle="dropdown"
+              >
+                Alarm btn short hold (2s)
+              </button>
+            </Tippy>
+
+            <Tippy content={
+              <div>
+                Holding the watch alarm button for 10 seconds will initiate a
+                reset of the ongoing alarm. This will make the watch enter
+                Resetting State and continue to Sensing State
+              </div>}>
+              <button
+                id="MediumHold"
+                onClick={() => handleOnWatchButton_MediumHold()}
+                className="btn btn-danger btn-sm btn-Medium-Hold m-1"
+              >
+                Alarm btn medium hold (10s)
+              </button>
+            </Tippy>
+
+            <Tippy content={
+              <div>Holding the watch alarm button for 30 seconds will initiate a
+              factory reset on the watch. This reset will step through several states
+              until finally reaching the Deep Sleep state
+              </div>}>
+              <button
+                id="LongHold"
+                onClick={() => handleOnWatchButton_LongHold()}
+                className="btn btn-danger btn-sm btn-Long-Hold m-1"
+              >
+                Alarm btn medium hold (30s)
+              </button>
+            </Tippy>
+
+          </div>
+
+        </div>
+
+        <div id="rightSide">
+          <nav id="navbarRight" class="navbar navbar-dark bg-primary">State machine for bellpal watch</nav>
+          {topBtnArray.map((stateBtnObject) => {
+            return (
+              <StateButton
+                id={stateBtnObject.btnId}
+                // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
+                text={stateBtnObject.textOnBtn}
+              />
+            );
+          })}
+          <div>
+            {/* Space between states */}
+          </div>
+          {midTopBtnArray.map((stateBtnObject) => {
+            return (
+              <StateButton
+                id={stateBtnObject.btnId}
+                // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
+                text={stateBtnObject.textOnBtn}
+              />
+            );
+          })}
+          <div>
+            {/* Space between states */}
+          </div>
+          {midBtnArray.map((stateBtnObject) => {
+            return (
+              <StateButton
+                id={stateBtnObject.btnId}
+                // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
+                text={stateBtnObject.textOnBtn}
+              />
+            );
+          })}
+          <div>
+            {/* Space between states */}
+          </div>
+          {botBtnArray.map((stateBtnObject) => {
+            return (
+              <StateButton
+                id={stateBtnObject.btnId}
+                // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
+                text={stateBtnObject.textOnBtn}
+
+              />
+            );
+          })}
+
+        </div>
+      </div>
+
+      <div>testa arrows här
+      {/* <Arrow
+          className="arrow"
+          from={{
+            direction: DIRECTION.BOTTOM,
+            node: () => document.getElementById("MediumHold"),
+            translation: [-0.5, 0.5]
+          }}
+          to={{
+            direction: DIRECTION.TOP,
+            node: () => document.getElementById("ConfirmAlarmBtn"),
+            translation: [0, -0.8] // Ändra detta för att få curvature på pilen
+
+          }}
+        /> */}
+        <StateArrow
+          fromState="MediumHold"
+          toState="ConfirmAlarmBtn"
+        >
+        </StateArrow>
+
+
+      </div>
     </div>
+
   );
 };
 
