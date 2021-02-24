@@ -2,21 +2,25 @@ import React from "react";
 
 import Arrow, { DIRECTION, HEAD } from "react-arrows"
 
-const StateArrow = ({ fromState, toState }) => {
+const StateArrow = ({ id, fromBtn, toBtn, extrudeDir,
+  attachDir, curvFrom1, curvFrom2, curvTo1, curvTo2 }) => {
   return (
     <Arrow
+      arwId={id}
       className="arrow"
       from={{
-        direction: DIRECTION.BOTTOM,
-        node: () => document.getElementById( fromState ),
-        translation: [-0.5, 0.5]
+        direction: extrudeDir,
+        node: () => document.getElementById(fromBtn),
+        translation: [curvFrom1, curvFrom2]
       }}
       to={{
-        direction: DIRECTION.TOP,
-        node: () => document.getElementById( toState ),
-        translation: [0, -0.8] // Ändra detta för att få curvature på pilen
-
+        direction: attachDir,
+        node: () => document.getElementById(toBtn),
+        translation: [curvTo1, curvTo2], // Ändra detta för att få curvature på pilen
       }}
+      head={
+        HEAD.NORMAL
+      }
     >
     </Arrow>
 

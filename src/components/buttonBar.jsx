@@ -4,9 +4,80 @@ import StateArrow from "./stateArrow";
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
 
+import Xarrow from "react-xarrows";
+
 import Arrow, { DIRECTION, HEAD } from "react-arrows"
+import { getQueriesForElement } from "@testing-library/react";
 
 
+var botToTopProps = {
+  color: "#F76F8E", //#96616B
+  startAnchor: { position: "top", offset: { rightness: 15 } },
+  endAnchor: { position: "bottom", offset: { rightness: 15 } }
+}
+var returnTopToBotProps = {
+  color: "#F76F8E",
+  startAnchor: { position: "bottom", offset: { rightness: -15 } },
+  endAnchor: { position: "top", offset: { rightness: -15 } }
+}
+var sensingToNotifyAutoFall = {
+  color: "#F76F8E",
+  startAnchor: { position: "right", offset: { bottomness: -20 } },
+  endAnchor: { position: "left" },
+  curveness: 0.2
+}
+var sensingToNotifyManualAlarm = {
+  color: "#F76F8E",
+  startAnchor: { position: "right", offset: { bottomness: 40, rightness: -15 } },
+  endAnchor: { position: "left", offset: { bottomness: 0 } },
+  curveness: 0.3
+}
+var manualFallToSendAlarm = {
+  color: "#F76F8E",
+  startAnchor: { position: "right" },
+  endAnchor: { position: "bottom" },
+  curveness: 1
+}
+var autoFallNotifyToSendAlarm = {
+  color: "#F76F8E",
+  startAnchor: { position: "right" },
+  endAnchor: { position: "top" },
+  curveness: 1
+}
+var autoFallNotifyToResetAlarm = {
+  color: "#F76F8E",
+  startAnchor: { position: "bottom" },
+  endAnchor: { position: "top" },
+}
+var sendingToResetAlarm = {
+  color: "#F76F8E",
+  startAnchor: { position: "left" },
+  endAnchor: { position: "right" },
+}
+var sendingToConfirmAlarm = {
+  color: "#F76F8E",
+  startAnchor: { position: "top", offset: { rightness: -20, bottomness: 5 } },
+  endAnchor: { position: "right" },
+  curveness: 0.5
+}
+var alarmConfirmedToResetAlarm = {
+  color: "#F76F8E",
+  opacity: 0.2,
+  startAnchor: { position: "bottom", offset: { rightness: 15 } },
+  endAnchor: { position: "left", offset: { bottomness: -15 } },
+  curveness: 0.5
+}
+var resettingAlarmToSensing = {
+  color: "#F76F8E",
+  startAnchor: { position: "left", offset: { bottomness: 40, rightness: 15 } },
+  endAnchor: { position: "right", offset: { bottomness: 30, rightness: -10 } },
+  curveness: 0.3
+}
+var manualAlarmToResetAlarm = {
+  color: "#F76F8E",
+  startAnchor: { position: "top" },
+  endAnchor: { position: "bottom" }
+}
 
 
 
@@ -21,6 +92,8 @@ const ENUMSTATE = {
   FACTORY_DEFAULT_STATE: "FACTORY_DEFAULT_STATE", // 7
   DEEP_SLEEP_STATE: "DEEP_SLEEP_STATE" // 8
 };
+
+
 
 const newArrayInsteadOfMap = [
   { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep" },
@@ -37,23 +110,45 @@ const newArrayInsteadOfMap = [
 const topBtnArray = [
   { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep" },
   { btnId: "EMPTYBTN1", textOnBtn: "" },
-  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying App Fall Alarm" }
+  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying App Fall Alarm" },
+  { btnId: "EMPTYBTN2", textOnBtn: "" }
 ];
 const midTopBtnArray = [
   { btnId: "sensingStateBtn", textOnBtn: "Sensing" },
   { btnId: "alarmConfirmedStateBtn", textOnBtn: "Alarm Confirmed" },
-  { btnId: "EMPTYBTN2", textOnBtn: "" }
+  { btnId: "EMPTYBTN3", textOnBtn: "" },
+  { btnId: "EMPTYBTN4", textOnBtn: "" }
 ];
 const midBtnArray = [
   { btnId: "factoryDefaultStateBtn", textOnBtn: "Factory Default" },
+  { btnId: "EMPTYBTN5", textOnBtn: "" },
   { btnId: "resettingAlarmStateBtn", textOnBtn: "Resetting Alarm" },
   { btnId: "sendingAlarmStateBtn", textOnBtn: "Sending Alarm" }
 ];
 const botBtnArray = [
   { btnId: "deepSleepStateBtn", textOnBtn: "Deep Sleep" },
-
+  { btnId: "EMPTYBTN6", textOnBtn: "" },
   { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "Notify App Manual Alarm" },
-  { btnId: "EMPTYBTN3", textOnBtn: "" }
+  { btnId: "EMPTYBTN7", textOnBtn: "" }
+
+];
+const allArrows = [
+  "deepSleepToFactoryArrow",
+  "factoryDefaultToDeepSleepArrow",
+  "factoryDefaultToSensingArrow",
+  "sensingToFactoryDefaultArrow",
+  "sensingToLightSleep",
+  "lightSleepToSensing",
+  "sensingToNotifyingFallAlarm",
+  "sensingToNotifyingManualAlarm",
+  "notifyingManualAlarmToSendingAlarm",
+  "notifyingFallAlarmToSendingAlarm",
+  "notifyingFallAlarmToResettingAlarm",
+  "sendingAlarmToResettingAlarm",
+  "notifyingManualAlarmToResettingAlarm",
+  "sendingAlarmToAlarmConfirmed",
+  "alarmConfirmedToResettingAlarm",
+  "resettingAlarmToSensing"
 ];
 
 
@@ -83,11 +178,22 @@ const ButtonBar = () => {
     else {
       console.log("WROOONG");
     }
-    let allPics = ["BellpalWatch.png", "BellpalWatch_GREEN.png", "BellpalWatch_BLUE.png", "BellpalWatch_RED.png"];
   }
 
+  const disableAllArrows = (arrowId) => {
+    for (var arrow of allArrows) {
+      disableArrow(arrow);
+    }
+  }
 
-
+  const disableArrow = (arrowId) => {
+    // document.getElementById(arrowId).style.color = "#96616B"; // CANT CHANGE COLOR..???
+    document.getElementById(arrowId).style.opacity = 0.3; // opacity at max since the color is darker
+  }
+  const enableArrow = (arrowId) => {
+    // document.getElementById(arrowId).style.color = "#F76F8E" //F76F8E, CANT CHANGE COLOR..???
+    document.getElementById(arrowId).style.opacity = 0.9; // poacity at 0.8 since the color is brighter
+  }
   const startBlinking = (stringOfPicToChange) => {
     // Clear previous interval and set the render image to original bellpalWatch image without LED light
     clearInterval(blinkingLEDintervalId);
@@ -113,6 +219,11 @@ const ButtonBar = () => {
       document.getElementById("EMPTYBTN1").style.opacity = 0; // renderes the empty button invisible
       document.getElementById("EMPTYBTN2").style.opacity = 0; // renderes the empty button invisible
       document.getElementById("EMPTYBTN3").style.opacity = 0; // renderes the empty button invisible
+      document.getElementById("EMPTYBTN4").style.opacity = 0; // renderes the empty button invisible
+      document.getElementById("EMPTYBTN5").style.opacity = 0; // renderes the empty button invisible
+      document.getElementById("EMPTYBTN6").style.opacity = 0; // renderes the empty button invisible
+      document.getElementById("EMPTYBTN7").style.opacity = 0; // renderes the empty button invisible
+      //document.getElementById("PELLE").style.opacity = 0.8; // renderes the empty button invisible
       return;
     }
     else if (isAlarmingFollowers === true) {
@@ -147,6 +258,8 @@ const ButtonBar = () => {
 
     let timerGang;
     if (currentState === ENUMSTATE.DEEP_SLEEP_STATE) {
+      disableAllArrows();
+      enableArrow("deepSleepToFactoryArrow");
       document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
       clearInterval(blinkingLEDintervalId);
 
@@ -167,11 +280,12 @@ const ButtonBar = () => {
       if (isFactoryResetActive === true) { setIsFactoryResetActive(false); }
     }
     else if (currentState === ENUMSTATE.FACTORY_DEFAULT_STATE) {
+      disableAllArrows();
+      enableArrow("factoryDefaultToDeepSleepArrow");
+      enableArrow("factoryDefaultToSensingArrow");
       if (isFactoryResetActive === false) {
         startBlinking("BellpalWatch_BLUE.png");
       }
-
-
 
       changeOpacityOnStateButton("factoryDefaultStateBtn");
       // TO-DO - Make watch LED blink accordingly to state (blue,null)
@@ -199,6 +313,11 @@ const ButtonBar = () => {
       }
     }
     else if (currentState === ENUMSTATE.SENSING_STATE) {
+      disableAllArrows();
+      enableArrow("sensingToFactoryDefaultArrow");
+      enableArrow("sensingToLightSleep");
+      enableArrow("sensingToNotifyingFallAlarm");
+      enableArrow("sensingToNotifyingManualAlarm");
       document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
       clearInterval(blinkingLEDintervalId);
 
@@ -229,6 +348,8 @@ const ButtonBar = () => {
       }
     }
     else if (currentState === ENUMSTATE.LIGHT_SLEEP_STATE) {
+      disableAllArrows();
+      enableArrow("lightSleepToSensing");
       document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
       clearInterval(blinkingLEDintervalId);
       changeOpacityOnStateButton("lightSleepStateBtn");
@@ -244,6 +365,9 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Light sleeping mode active";
     }
     else if (currentState === ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE) {
+      disableAllArrows();
+      enableArrow("notifyingFallAlarmToSendingAlarm");
+      enableArrow("notifyingFallAlarmToResettingAlarm");
       startBlinking("BellpalWatch_RED.png");
       changeOpacityOnStateButton("notifyingAppFallAlarmStateBtn");
       disableButton("ConfirmAlarmBtn");
@@ -261,6 +385,9 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Trying to send automatic fall alarm to phone";
     }
     else if (currentState === ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE) {
+      disableAllArrows();
+      enableArrow("notifyingManualAlarmToSendingAlarm");
+      enableArrow("notifyingManualAlarmToResettingAlarm");
       startBlinking("BellpalWatch_RED.png");
       changeOpacityOnStateButton("notifyingAppManualAlarmStateBtn");
       disableButton("ConfirmAlarmBtn");
@@ -278,6 +405,9 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Trying to send manual alarm to phone";
     }
     else if (currentState === ENUMSTATE.SENDING_ALARM_STATE) {
+      disableAllArrows();
+      enableArrow("sendingAlarmToResettingAlarm");
+      enableArrow("sendingAlarmToAlarmConfirmed");
       startBlinking("BellpalWatch_RED.png");
       changeOpacityOnStateButton("sendingAlarmStateBtn");
       disableButton("ConnectWatchToPhone");
@@ -293,6 +423,8 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Alarm sent, 30sec before alarm is sent to followers";
     }
     else if (currentState === ENUMSTATE.ALARM_CONFIRMED_STATE) {
+      disableAllArrows();
+      enableArrow("alarmConfirmedToResettingAlarm");
       startBlinking("BellpalWatch_GREEN.png");
       changeOpacityOnStateButton("alarmConfirmedStateBtn");
       disableButton("ConfirmAlarmBtn");
@@ -307,6 +439,8 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Alarm confirmed by follower";
     }
     else if (currentState === ENUMSTATE.RESETTING_ALARM_STATE) {
+      disableAllArrows();
+      enableArrow("resettingAlarmToSensing");
       document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
       clearInterval(blinkingLEDintervalId);
       setAlarmed(false);
@@ -387,7 +521,16 @@ const ButtonBar = () => {
   // Long hold(30s) will set state back to deepSleep state
   const handleOnWatchButton_LongHold = () => {
     setIsFactoryResetActive(true);
-    setCurrentState(ENUMSTATE.RESETTING_ALARM_STATE);
+    if (currentState === ENUMSTATE.LIGHT_SLEEP_STATE) {
+      setCurrentState(ENUMSTATE.SENSING_STATE);
+    }
+    else if (currentState === ENUMSTATE.SENSING_STATE) {
+      setCurrentState(ENUMSTATE.FACTORY_DEFAULT_STATE);
+    }
+    else {
+      setCurrentState(ENUMSTATE.RESETTING_ALARM_STATE);
+
+    }
   };
 
   const simulateAutomaticFallAlarm = () => {
@@ -546,9 +689,7 @@ const ButtonBar = () => {
               />
             );
           })}
-          <div>
-            {/* Space between states */}
-          </div>
+
           {midTopBtnArray.map((stateBtnObject) => {
             return (
               <StateButton
@@ -558,9 +699,7 @@ const ButtonBar = () => {
               />
             );
           })}
-          <div>
-            {/* Space between states */}
-          </div>
+
           {midBtnArray.map((stateBtnObject) => {
             return (
               <StateButton
@@ -570,9 +709,7 @@ const ButtonBar = () => {
               />
             );
           })}
-          <div>
-            {/* Space between states */}
-          </div>
+
           {botBtnArray.map((stateBtnObject) => {
             return (
               <StateButton
@@ -588,29 +725,33 @@ const ButtonBar = () => {
       </div>
 
       <div>testa arrows här
-      {/* <Arrow
-          className="arrow"
-          from={{
-            direction: DIRECTION.BOTTOM,
-            node: () => document.getElementById("MediumHold"),
-            translation: [-0.5, 0.5]
-          }}
-          to={{
-            direction: DIRECTION.TOP,
-            node: () => document.getElementById("ConfirmAlarmBtn"),
-            translation: [0, -0.8] // Ändra detta för att få curvature på pilen
 
-          }}
+        {/* <Xarrow
+          start="alarmConfirmedStateBtn" //can be react ref
+          end="resettingAlarmStateBtn" //or an id
+          startAnchor={{ position: "bottom", offset: { rightness: -15 } }}
+          endAnchor={{ position: "top", offset: { rightness: -15 } }}
+
         /> */}
+        <Xarrow {...botToTopProps} id="deepSleepToFactoryArrow" start="deepSleepStateBtn" end="factoryDefaultStateBtn" />
+        <Xarrow {...returnTopToBotProps} id="factoryDefaultToDeepSleepArrow" start="factoryDefaultStateBtn" end="deepSleepStateBtn" />
+        <Xarrow {...botToTopProps} id="factoryDefaultToSensingArrow" start="factoryDefaultStateBtn" end="sensingStateBtn" />
+        <Xarrow {...returnTopToBotProps} id="sensingToFactoryDefaultArrow" start="sensingStateBtn" end="factoryDefaultStateBtn" />
+        <Xarrow {...botToTopProps} id="sensingToLightSleep" start="sensingStateBtn" end="lightSleepStateBtn" />
+        <Xarrow {...returnTopToBotProps} id="lightSleepToSensing" start="lightSleepStateBtn" end="sensingStateBtn" />
 
+        <Xarrow {...sensingToNotifyAutoFall} id="sensingToNotifyingFallAlarm" start="sensingStateBtn" end="notifyingAppFallAlarmStateBtn" />
+        <Xarrow {...sensingToNotifyManualAlarm} id="sensingToNotifyingManualAlarm" start="sensingStateBtn" end="notifyingAppManualAlarmStateBtn" />
+        <Xarrow {...manualFallToSendAlarm} id="notifyingManualAlarmToSendingAlarm" start="notifyingAppManualAlarmStateBtn" end="sendingAlarmStateBtn" />
+        <Xarrow {...autoFallNotifyToSendAlarm} id="notifyingFallAlarmToSendingAlarm" start="notifyingAppFallAlarmStateBtn" end="sendingAlarmStateBtn" />
 
-        <StateArrow
-          fromState="MediumHold"
-          toState="ConfirmAlarmBtn"
-        >
-        </StateArrow>
+        <Xarrow {...autoFallNotifyToResetAlarm} id="notifyingFallAlarmToResettingAlarm" start="notifyingAppFallAlarmStateBtn" end="resettingAlarmStateBtn" />
+        <Xarrow {...sendingToResetAlarm} id="sendingAlarmToResettingAlarm" start="sendingAlarmStateBtn" end="resettingAlarmStateBtn" />
+        <Xarrow {...manualAlarmToResetAlarm} id="notifyingManualAlarmToResettingAlarm" start="notifyingAppManualAlarmStateBtn" end="resettingAlarmStateBtn" />
+        <Xarrow {...sendingToConfirmAlarm} id="sendingAlarmToAlarmConfirmed" start="sendingAlarmStateBtn" end="alarmConfirmedStateBtn" />
+        <Xarrow {...alarmConfirmedToResetAlarm} id="alarmConfirmedToResettingAlarm" start="alarmConfirmedStateBtn" end="resettingAlarmStateBtn" />
 
-
+        <Xarrow {...resettingAlarmToSensing} id="resettingAlarmToSensing" start="resettingAlarmStateBtn" end="sensingStateBtn" />
       </div>
     </div>
 
