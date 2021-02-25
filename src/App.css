@@ -67,15 +67,14 @@ img {
 #container {
   display: flex;
   /* margin: 0 auto;  UNCLEAR IF THIS DOES ANYTHING. KEEP JUST IN CASE */
-  width: 100%;
-  height: 100%;
   justify-content: center;
+  align-items: stretch;
+  min-height: 100vh;
 }
+
 /* Height here cant be 100% cos then it looks like on the pic  */
 #leftSide {
   background: #113537;
-  width: 100%;
-  height: 100%;
   opacity: 70%;
   border: #050f10;
   border-style: solid;
@@ -84,11 +83,10 @@ img {
 /* Height is 100% here which is what i want */
 #rightSide {
   background: #37505c;
-  width: 100%;
-  height: 100%;
   opacity: 70%;
   border: #050f10;
   border-style: solid;
+  flex-wrap: nowrap;
 }
 
 /*  specs for cirle button */

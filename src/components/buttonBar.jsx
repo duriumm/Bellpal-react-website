@@ -1,84 +1,12 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import StateButton from "./stateButton";
-import StateArrow from "./stateArrow";
+
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css'; // optional
 
 import Xarrow from "react-xarrows";
 
-import Arrow, { DIRECTION, HEAD } from "react-arrows"
-import { getQueriesForElement } from "@testing-library/react";
-
-
-var botToTopProps = {
-  color: "#F76F8E", //#96616B
-  startAnchor: { position: "top", offset: { rightness: 15 } },
-  endAnchor: { position: "bottom", offset: { rightness: 15 } }
-}
-var returnTopToBotProps = {
-  color: "#F76F8E",
-  startAnchor: { position: "bottom", offset: { rightness: -15 } },
-  endAnchor: { position: "top", offset: { rightness: -15 } }
-}
-var sensingToNotifyAutoFall = {
-  color: "#F76F8E",
-  startAnchor: { position: "right", offset: { bottomness: -20 } },
-  endAnchor: { position: "left" },
-  curveness: 0.2
-}
-var sensingToNotifyManualAlarm = {
-  color: "#F76F8E",
-  startAnchor: { position: "right", offset: { bottomness: 40, rightness: -15 } },
-  endAnchor: { position: "left", offset: { bottomness: 0 } },
-  curveness: 0.3
-}
-var manualFallToSendAlarm = {
-  color: "#F76F8E",
-  startAnchor: { position: "right" },
-  endAnchor: { position: "bottom" },
-  curveness: 1
-}
-var autoFallNotifyToSendAlarm = {
-  color: "#F76F8E",
-  startAnchor: { position: "right" },
-  endAnchor: { position: "top" },
-  curveness: 1
-}
-var autoFallNotifyToResetAlarm = {
-  color: "#F76F8E",
-  startAnchor: { position: "bottom" },
-  endAnchor: { position: "top" },
-}
-var sendingToResetAlarm = {
-  color: "#F76F8E",
-  startAnchor: { position: "left" },
-  endAnchor: { position: "right" },
-}
-var sendingToConfirmAlarm = {
-  color: "#F76F8E",
-  startAnchor: { position: "top", offset: { rightness: -20, bottomness: 5 } },
-  endAnchor: { position: "right" },
-  curveness: 0.5
-}
-var alarmConfirmedToResetAlarm = {
-  color: "#F76F8E",
-  opacity: 0.2,
-  startAnchor: { position: "bottom", offset: { rightness: 15 } },
-  endAnchor: { position: "left", offset: { bottomness: -15 } },
-  curveness: 0.5
-}
-var resettingAlarmToSensing = {
-  color: "#F76F8E",
-  startAnchor: { position: "left", offset: { bottomness: 40, rightness: 15 } },
-  endAnchor: { position: "right", offset: { bottomness: 30, rightness: -10 } },
-  curveness: 0.3
-}
-var manualAlarmToResetAlarm = {
-  color: "#F76F8E",
-  startAnchor: { position: "top" },
-  endAnchor: { position: "bottom" }
-}
-
+import { xArrowProps } from "./stateArrowProps"
 
 
 const ENUMSTATE = {
@@ -92,20 +20,6 @@ const ENUMSTATE = {
   FACTORY_DEFAULT_STATE: "FACTORY_DEFAULT_STATE", // 7
   DEEP_SLEEP_STATE: "DEEP_SLEEP_STATE" // 8
 };
-
-
-
-const newArrayInsteadOfMap = [
-  { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep" },
-  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying App Fall Alarm" },
-  { btnId: "alarmConfirmedStateBtn", textOnBtn: "Alarm Confirmed" },
-  { btnId: "sensingStateBtn", textOnBtn: "Sensing" },
-  { btnId: "resettingAlarmStateBtn", textOnBtn: "Resetting Alarm" },
-  { btnId: "sendingAlarmStateBtn", textOnBtn: "Sending Alarm" },
-  { btnId: "factoryDefaultStateBtn", textOnBtn: "Factory Default" },
-  { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "Notify App Manual Alarm" },
-  { btnId: "deepSleepStateBtn", textOnBtn: "Deep Sleep" }
-];
 
 const topBtnArray = [
   { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep" },
@@ -223,12 +137,11 @@ const ButtonBar = () => {
       document.getElementById("EMPTYBTN5").style.opacity = 0; // renderes the empty button invisible
       document.getElementById("EMPTYBTN6").style.opacity = 0; // renderes the empty button invisible
       document.getElementById("EMPTYBTN7").style.opacity = 0; // renderes the empty button invisible
-      //document.getElementById("PELLE").style.opacity = 0.8; // renderes the empty button invisible
+
       return;
     }
     else if (isAlarmingFollowers === true) {
       console.log("We acted on isAlarmingFollowers");
-      //setTimer(clearTimeout(timer)); // THIS DOESNT ACTUALLY CLEAR ANYTHINGs
       document.getElementById("TopAlarmLabel").className = "badge badge-danger";
       document.getElementById("TopAlarmLabel").innerHTML = "Alarm sent to followers!";
 
@@ -554,7 +467,7 @@ const ButtonBar = () => {
       })} */}
       <div id="container">
         <div id="leftSide">
-          <nav id="navbarLeft" class="navbar navbar-dark bg-primary" style={{ border: "" }}>Alarm buttons</nav>
+          <nav id="navbarLeft" className="navbar navbar-dark bg-primary" style={{ border: "" }}>Alarm buttons</nav>
           <h2> <span className="badge m-2 badge-light">{counter}</span> </h2>
           <div>
             <h3> <p className="badge m-2 badge-primary" id="TopAlarmLabel">Alarm is not active</p> </h3>
@@ -566,7 +479,7 @@ const ButtonBar = () => {
               Hover over each button to get more info</p>
             </h3> */}
           </div>
-          <div class="btn-group-vertical">
+          <div className="btn-group-vertical">
             <Tippy content={
               <div>
                 Press this button to simulate an automatic fall alarm triggered by the watch fall algorithm.
@@ -614,7 +527,7 @@ const ButtonBar = () => {
 
           {/* BELOW ARE ALL ALARM BUTTONS */}
 
-          <div class="btn-group-vertical">
+          <div className="btn-group-vertical">
             <Tippy content={
               <div>
                 Pressing the alarm button quickly will make the watch go from
@@ -679,79 +592,78 @@ const ButtonBar = () => {
         </div>
 
         <div id="rightSide">
-          <nav id="navbarRight" class="navbar navbar-dark bg-primary" style={{ border: "" }}>State machine for bellpal watch</nav>
-          {topBtnArray.map((stateBtnObject) => {
-            return (
-              <StateButton
-                id={stateBtnObject.btnId}
-                // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
-                text={stateBtnObject.textOnBtn}
-              />
-            );
-          })}
+          <nav id="navbarRight" className="navbar navbar-dark bg-primary" style={{ border: "" }}>State machine for bellpal watch</nav>
+          <div>
+            {topBtnArray.map((stateBtnObject) => {
+              return (
+                <StateButton
+                  id={stateBtnObject.btnId}
+                  // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
+                  text={stateBtnObject.textOnBtn}
+                />
+              );
+            })}
+          </div>
+          <div>
+            {midTopBtnArray.map((stateBtnObject) => {
+              return (
+                <StateButton
+                  id={stateBtnObject.btnId}
+                  // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
+                  text={stateBtnObject.textOnBtn}
+                />
+              );
+           })}
+          </div>
 
-          {midTopBtnArray.map((stateBtnObject) => {
-            return (
-              <StateButton
-                id={stateBtnObject.btnId}
-                // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
-                text={stateBtnObject.textOnBtn}
-              />
-            );
-          })}
+          <div>
+            {midBtnArray.map((stateBtnObject) => {
+              return (
+                <StateButton
+                  id={stateBtnObject.btnId}
+                  // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
+                  text={stateBtnObject.textOnBtn}
+                />
+              );
+            })}
+          </div>
+          <div>
+            {botBtnArray.map((stateBtnObject) => {
+              return (
+                <StateButton
+                  id={stateBtnObject.btnId}
+                  // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
+                  text={stateBtnObject.textOnBtn}
 
-          {midBtnArray.map((stateBtnObject) => {
-            return (
-              <StateButton
-                id={stateBtnObject.btnId}
-                // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
-                text={stateBtnObject.textOnBtn}
-              />
-            );
-          })}
-
-          {botBtnArray.map((stateBtnObject) => {
-            return (
-              <StateButton
-                id={stateBtnObject.btnId}
-                // changeStateOnClick={changeStateOnClick} // array med bara knapp 1 och 2 i :) (en array för varje rad)
-                text={stateBtnObject.textOnBtn}
-
-              />
-            );
-          })}
+                />
+              );
+            })}
+          </div>
 
         </div>
       </div>
 
       <div>
 
-        {/* <Xarrow
-          start="alarmConfirmedStateBtn" //can be react ref
-          end="resettingAlarmStateBtn" //or an id
-          startAnchor={{ position: "bottom", offset: { rightness: -15 } }}
-          endAnchor={{ position: "top", offset: { rightness: -15 } }}
+        <Xarrow {...xArrowProps.botToTopProps} id="deepSleepToFactoryArrow" start="deepSleepStateBtn" end="factoryDefaultStateBtn" />
+        <Xarrow {...xArrowProps.returnTopToBotProps} id="factoryDefaultToDeepSleepArrow" start="factoryDefaultStateBtn" end="deepSleepStateBtn" />
+        <Xarrow {...xArrowProps.botToTopProps} id="factoryDefaultToSensingArrow" start="factoryDefaultStateBtn" end="sensingStateBtn" />
+        <Xarrow {...xArrowProps.returnTopToBotProps} id="sensingToFactoryDefaultArrow" start="sensingStateBtn" end="factoryDefaultStateBtn" />
+        <Xarrow {...xArrowProps.botToTopProps} id="sensingToLightSleep" start="sensingStateBtn" end="lightSleepStateBtn" />
+        <Xarrow {...xArrowProps.returnTopToBotProps} id="lightSleepToSensing" start="lightSleepStateBtn" end="sensingStateBtn" />
 
-        /> */}
-        <Xarrow {...botToTopProps} id="deepSleepToFactoryArrow" start="deepSleepStateBtn" end="factoryDefaultStateBtn" />
-        <Xarrow {...returnTopToBotProps} id="factoryDefaultToDeepSleepArrow" start="factoryDefaultStateBtn" end="deepSleepStateBtn" />
-        <Xarrow {...botToTopProps} id="factoryDefaultToSensingArrow" start="factoryDefaultStateBtn" end="sensingStateBtn" />
-        <Xarrow {...returnTopToBotProps} id="sensingToFactoryDefaultArrow" start="sensingStateBtn" end="factoryDefaultStateBtn" />
-        <Xarrow {...botToTopProps} id="sensingToLightSleep" start="sensingStateBtn" end="lightSleepStateBtn" />
-        <Xarrow {...returnTopToBotProps} id="lightSleepToSensing" start="lightSleepStateBtn" end="sensingStateBtn" />
+        <Xarrow {...xArrowProps.sensingToNotifyAutoFall} id="sensingToNotifyingFallAlarm" start="sensingStateBtn" end="notifyingAppFallAlarmStateBtn" />
+        <Xarrow {...xArrowProps.sensingToNotifyManualAlarm} id="sensingToNotifyingManualAlarm" start="sensingStateBtn" end="notifyingAppManualAlarmStateBtn" />
+        <Xarrow {...xArrowProps.manualFallToSendAlarm} id="notifyingManualAlarmToSendingAlarm" start="notifyingAppManualAlarmStateBtn" end="sendingAlarmStateBtn" />
+        <Xarrow {...xArrowProps.autoFallNotifyToSendAlarm} id="notifyingFallAlarmToSendingAlarm" start="notifyingAppFallAlarmStateBtn" end="sendingAlarmStateBtn" />
 
-        <Xarrow {...sensingToNotifyAutoFall} id="sensingToNotifyingFallAlarm" start="sensingStateBtn" end="notifyingAppFallAlarmStateBtn" />
-        <Xarrow {...sensingToNotifyManualAlarm} id="sensingToNotifyingManualAlarm" start="sensingStateBtn" end="notifyingAppManualAlarmStateBtn" />
-        <Xarrow {...manualFallToSendAlarm} id="notifyingManualAlarmToSendingAlarm" start="notifyingAppManualAlarmStateBtn" end="sendingAlarmStateBtn" />
-        <Xarrow {...autoFallNotifyToSendAlarm} id="notifyingFallAlarmToSendingAlarm" start="notifyingAppFallAlarmStateBtn" end="sendingAlarmStateBtn" />
+        <Xarrow {...xArrowProps.autoFallNotifyToResetAlarm} id="notifyingFallAlarmToResettingAlarm" start="notifyingAppFallAlarmStateBtn" end="resettingAlarmStateBtn" />
+        <Xarrow {...xArrowProps.sendingToResetAlarm} id="sendingAlarmToResettingAlarm" start="sendingAlarmStateBtn" end="resettingAlarmStateBtn" />
+        <Xarrow {...xArrowProps.manualAlarmToResetAlarm} id="notifyingManualAlarmToResettingAlarm" start="notifyingAppManualAlarmStateBtn" end="resettingAlarmStateBtn" />
+        <Xarrow {...xArrowProps.sendingToConfirmAlarm} id="sendingAlarmToAlarmConfirmed" start="sendingAlarmStateBtn" end="alarmConfirmedStateBtn" />
+        <Xarrow {...xArrowProps.alarmConfirmedToResetAlarm} id="alarmConfirmedToResettingAlarm" start="alarmConfirmedStateBtn" end="resettingAlarmStateBtn" />
 
-        <Xarrow {...autoFallNotifyToResetAlarm} id="notifyingFallAlarmToResettingAlarm" start="notifyingAppFallAlarmStateBtn" end="resettingAlarmStateBtn" />
-        <Xarrow {...sendingToResetAlarm} id="sendingAlarmToResettingAlarm" start="sendingAlarmStateBtn" end="resettingAlarmStateBtn" />
-        <Xarrow {...manualAlarmToResetAlarm} id="notifyingManualAlarmToResettingAlarm" start="notifyingAppManualAlarmStateBtn" end="resettingAlarmStateBtn" />
-        <Xarrow {...sendingToConfirmAlarm} id="sendingAlarmToAlarmConfirmed" start="sendingAlarmStateBtn" end="alarmConfirmedStateBtn" />
-        <Xarrow {...alarmConfirmedToResetAlarm} id="alarmConfirmedToResettingAlarm" start="alarmConfirmedStateBtn" end="resettingAlarmStateBtn" />
-
-        <Xarrow {...resettingAlarmToSensing} id="resettingAlarmToSensing" start="resettingAlarmStateBtn" end="sensingStateBtn" />
+        <Xarrow {...xArrowProps.resettingAlarmToSensing} id="resettingAlarmToSensing" start="resettingAlarmStateBtn" end="sensingStateBtn" />
       </div>
     </div>
 
