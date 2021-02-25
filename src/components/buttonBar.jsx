@@ -679,7 +679,7 @@ const ButtonBar = () => {
         </div>
 
         <div id="rightSide">
-          <nav id="navbarRight" class="navbar navbar-dark bg-primary">State machine for bellpal watch</nav>
+          <nav id="navbarRight" class="navbar navbar-dark bg-primary" style={{ border: "" }}>State machine for bellpal watch</nav>
           {topBtnArray.map((stateBtnObject) => {
             return (
               <StateButton
@@ -724,7 +724,7 @@ const ButtonBar = () => {
         </div>
       </div>
 
-      <div>testa arrows här
+      <div>
 
         {/* <Xarrow
           start="alarmConfirmedStateBtn" //can be react ref
