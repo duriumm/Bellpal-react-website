@@ -83,11 +83,11 @@ const ButtonBar = () => {
   const switchImages = (stringOfPicToChange) => {
     let imgToChangeId = document.getElementById("bellpalWatchRegular"); // Id of img 2 changge
 
-    if (imgToChangeId.getAttribute("src") == "BellpalWatch.png") {
+    if (imgToChangeId.getAttribute("src") == "BellpalWatch_ORIGINAL_new.png") {
       imgToChangeId.src = stringOfPicToChange;
     }
     else if (imgToChangeId.getAttribute("src") == stringOfPicToChange) {
-      imgToChangeId.src = "BellpalWatch.png";
+      imgToChangeId.src = "BellpalWatch_ORIGINAL_new.png";
     }
     else {
       console.log("WROOONG");
@@ -112,7 +112,7 @@ const ButtonBar = () => {
     // Clear previous interval and set the render image to original bellpalWatch image without LED light
     clearInterval(blinkingLEDintervalId);
     let imgToChangeId = document.getElementById("bellpalWatchRegular"); // Id of img 2 changge
-    imgToChangeId.src = "BellpalWatch.png";
+    imgToChangeId.src = "BellpalWatch_ORIGINAL_new.png";
 
     // Start interval with specific id and switch image between original BP image and color changed BP image
     const blinkLEDId = setInterval(() => {
@@ -173,7 +173,7 @@ const ButtonBar = () => {
     if (currentState === ENUMSTATE.DEEP_SLEEP_STATE) {
       disableAllArrows();
       enableArrow("deepSleepToFactoryArrow");
-      document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
+      document.getElementById("bellpalWatchRegular").src = "BellpalWatch_ORIGINAL_new.png"
       clearInterval(blinkingLEDintervalId);
 
       changeOpacityOnStateButton("deepSleepStateBtn");
@@ -197,7 +197,7 @@ const ButtonBar = () => {
       enableArrow("factoryDefaultToDeepSleepArrow");
       enableArrow("factoryDefaultToSensingArrow");
       if (isFactoryResetActive === false) {
-        startBlinking("BellpalWatch_BLUE.png");
+        startBlinking("BellpalWatch_BLUE_new.png");
       }
 
       changeOpacityOnStateButton("factoryDefaultStateBtn");
@@ -231,7 +231,7 @@ const ButtonBar = () => {
       enableArrow("sensingToLightSleep");
       enableArrow("sensingToNotifyingFallAlarm");
       enableArrow("sensingToNotifyingManualAlarm");
-      document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
+      document.getElementById("bellpalWatchRegular").src = "BellpalWatch_ORIGINAL_new.png"
       clearInterval(blinkingLEDintervalId);
 
       timerGang = setTimeout(() => setCurrentState(ENUMSTATE.LIGHT_SLEEP_STATE), 10000); // Changes state to lightSleep after 10 sec (inactivity)// CHANGE TO 120 SEC
@@ -263,7 +263,7 @@ const ButtonBar = () => {
     else if (currentState === ENUMSTATE.LIGHT_SLEEP_STATE) {
       disableAllArrows();
       enableArrow("lightSleepToSensing");
-      document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
+      document.getElementById("bellpalWatchRegular").src = "BellpalWatch_ORIGINAL_new.png"
       clearInterval(blinkingLEDintervalId);
       changeOpacityOnStateButton("lightSleepStateBtn");
       disableButton("ConfirmAlarmBtn");
@@ -281,7 +281,7 @@ const ButtonBar = () => {
       disableAllArrows();
       enableArrow("notifyingFallAlarmToSendingAlarm");
       enableArrow("notifyingFallAlarmToResettingAlarm");
-      startBlinking("BellpalWatch_RED.png");
+      startBlinking("BellpalWatch_RED_new.png");
       changeOpacityOnStateButton("notifyingAppFallAlarmStateBtn");
       disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
@@ -301,7 +301,7 @@ const ButtonBar = () => {
       disableAllArrows();
       enableArrow("notifyingManualAlarmToSendingAlarm");
       enableArrow("notifyingManualAlarmToResettingAlarm");
-      startBlinking("BellpalWatch_RED.png");
+      startBlinking("BellpalWatch_RED_new.png");
       changeOpacityOnStateButton("notifyingAppManualAlarmStateBtn");
       disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
@@ -321,7 +321,7 @@ const ButtonBar = () => {
       disableAllArrows();
       enableArrow("sendingAlarmToResettingAlarm");
       enableArrow("sendingAlarmToAlarmConfirmed");
-      startBlinking("BellpalWatch_RED.png");
+      startBlinking("BellpalWatch_RED_new.png");
       changeOpacityOnStateButton("sendingAlarmStateBtn");
       disableButton("ConnectWatchToPhone");
       disableButton("QuickPress");
@@ -338,7 +338,7 @@ const ButtonBar = () => {
     else if (currentState === ENUMSTATE.ALARM_CONFIRMED_STATE) {
       disableAllArrows();
       enableArrow("alarmConfirmedToResettingAlarm");
-      startBlinking("BellpalWatch_GREEN.png");
+      startBlinking("BellpalWatch_GREEN_new.png");
       changeOpacityOnStateButton("alarmConfirmedStateBtn");
       disableButton("ConfirmAlarmBtn");
       disableButton("ConnectWatchToPhone");
@@ -354,7 +354,7 @@ const ButtonBar = () => {
     else if (currentState === ENUMSTATE.RESETTING_ALARM_STATE) {
       disableAllArrows();
       enableArrow("resettingAlarmToSensing");
-      document.getElementById("bellpalWatchRegular").src = "BellpalWatch.png"
+      document.getElementById("bellpalWatchRegular").src = "BellpalWatch_ORIGINAL_new.png"
       clearInterval(blinkingLEDintervalId);
       setAlarmed(false);
       clearInterval(intervalId);
@@ -468,18 +468,15 @@ const ButtonBar = () => {
       <div id="container">
         <div id="leftSide">
           <nav id="navbarLeft" className="navbar navbar-dark bg-primary" style={{ border: "" }}>Alarm buttons</nav>
-          <h2> <span className="badge m-2 badge-light">{counter}</span> </h2>
+          <h2> <span className="badge m-2 badge-light custom-Badge">{counter}</span> </h2>
           <div>
             <h3> <p className="badge m-2 badge-primary" id="TopAlarmLabel">Alarm is not active</p> </h3>
           </div>
           <div>
-            {/* <h3>
-              <p className="badge m-2 badge-light" id="TopAlarmLabel">Simulations of actions like connecting the<br></br>watch to a smartphone are located on the left side</p>
-              <p className="badge m-2 badge-light" id="TopAlarmLabel">The watches alarm button interractions are<br></br>located on the right side here below.<br></br>
-              Hover over each button to get more info</p>
-            </h3> */}
+            <img id="bellpalWatchRegular" src="BellpalWatch_ORIGINAL_new.png"></img>
           </div>
-          <div className="btn-group-vertical">
+          {/* Automatic fall enable etc buttons below */}
+          <div className="btn-group-vertical m-2">
             <Tippy content={
               <div>
                 Press this button to simulate an automatic fall alarm triggered by the watch fall algorithm.
@@ -488,7 +485,7 @@ const ButtonBar = () => {
               <button
                 id="SimulateAutomaticFallAlarmBtn"
                 onClick={() => simulateAutomaticFallAlarm()}
-                className="btn btn-warning btn-sm m-2"
+                className="btn btn-danger btn-sm btn-Automatic-Fall m-1"
               >
                 Automatic fall alarm
               </button>
@@ -501,7 +498,7 @@ const ButtonBar = () => {
               <button
                 id="ConfirmAlarmBtn"
                 onClick={() => confirmWatchAlarmFromPhone()}
-                className="btn btn-success btn-sm m-2"
+                className="btn btn-danger btn-sm btn-Confirm-Alarm m-1"
               >
                 Confirm Alarm From Phone
               </button>
@@ -515,7 +512,7 @@ const ButtonBar = () => {
               <button
                 id="ConnectWatchToPhone"
                 onClick={() => connectWatchToPhone()}
-                className="btn btn-primary btn-sm m-2"
+                className="btn btn-danger btn-sm btn-Connect-To-Phone m-1"
               >
                 Connect Watch To Phone
               </button>
@@ -523,11 +520,11 @@ const ButtonBar = () => {
 
           </div>
 
-          <img id="bellpalWatchRegular" src="BellpalWatch.png"></img>
+          
 
           {/* BELOW ARE ALL ALARM BUTTONS */}
-
-          <div className="btn-group-vertical">
+          <div className="btn-group-vertical m-3">
+            
             <Tippy content={
               <div>
                 Pressing the alarm button quickly will make the watch go from
@@ -538,7 +535,7 @@ const ButtonBar = () => {
                 onClick={() => handleOnWatchButton_QuickPress()}
                 className="btn btn-danger btn-sm btn-Quick-Press m-1"
               >
-                Alarm btn quick press
+                Quick press
               </button>
             </Tippy>
 
@@ -554,7 +551,7 @@ const ButtonBar = () => {
                 className="btn btn-danger btn-sm btn-Short-Hold m-1"
                 data-toggle="dropdown"
               >
-                Alarm btn short hold (2s)
+                Alarm
               </button>
             </Tippy>
 
@@ -569,7 +566,7 @@ const ButtonBar = () => {
                 onClick={() => handleOnWatchButton_MediumHold()}
                 className="btn btn-danger btn-sm btn-Medium-Hold m-1"
               >
-                Alarm btn medium hold (10s)
+                Reset Alarm
               </button>
             </Tippy>
 
@@ -583,11 +580,19 @@ const ButtonBar = () => {
                 onClick={() => handleOnWatchButton_LongHold()}
                 className="btn btn-danger btn-sm btn-Long-Hold m-1"
               >
-                Alarm btn medium hold (30s)
+                Factory Reset
               </button>
             </Tippy>
 
+            {/* <Tippy content={  THIS DOES NOT WORK. ARROW IS NOT HOOVERABLE SADLY
+              <div>
+                POPUPTEXT that should show on hoovering this arrow
+              </div>}>
+              <Xarrow {...xArrowProps.botToTopProps} id="deepSleepToFactoryArrow" start="ConnectWatchToPhone" end="factoryDefaultStateBtn" />
+            </Tippy> */}
+
           </div>
+
 
         </div>
 
@@ -645,7 +650,7 @@ const ButtonBar = () => {
 
       <div>
 
-        <Xarrow {...xArrowProps.botToTopProps} id="deepSleepToFactoryArrow" start="deepSleepStateBtn" end="factoryDefaultStateBtn" />
+        {/* <Xarrow {...xArrowProps.botToTopProps} id="deepSleepToFactoryArrow" start="deepSleepStateBtn" end="factoryDefaultStateBtn" /> */}
         <Xarrow {...xArrowProps.returnTopToBotProps} id="factoryDefaultToDeepSleepArrow" start="factoryDefaultStateBtn" end="deepSleepStateBtn" />
         <Xarrow {...xArrowProps.botToTopProps} id="factoryDefaultToSensingArrow" start="factoryDefaultStateBtn" end="sensingStateBtn" />
         <Xarrow {...xArrowProps.returnTopToBotProps} id="sensingToFactoryDefaultArrow" start="sensingStateBtn" end="factoryDefaultStateBtn" />
