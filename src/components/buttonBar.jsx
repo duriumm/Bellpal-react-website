@@ -7,6 +7,8 @@ import 'tippy.js/dist/tippy.css'; // optional
 import Xarrow from "react-xarrows";
 
 import { xArrowProps } from "./stateArrowProps"
+import { panelTexts } from "./stateInfoPanelText"
+
 
 
 const ENUMSTATE = {
@@ -65,6 +67,8 @@ const allArrows = [
   "resettingAlarmToSensing"
 ];
 
+let waitFiveSeconds = 5000;
+
 
 const ButtonBar = () => {
 
@@ -73,10 +77,10 @@ const ButtonBar = () => {
   const [intervalId, setIntervalId] = useState(null);
   const [currentState, setCurrentState] = useState(ENUMSTATE.DEEP_SLEEP_STATE); // Sätts denna på varje re-render
   const [previousButton, setPreviousButton] = useState(null);
-
   const [isAlarmingFollowers, setIsAlarmingFollowers] = useState(false);
   const [isFactoryResetActive, setIsFactoryResetActive] = useState(false);
   const [blinkingLEDintervalId, setBlinkingLEDintervalId] = useState(null); // use this or blinking interval
+  const [currentStateInfoPanelText, setCurrentStateInfoPanelText] = useState("No text");
 
   const initialRender = useRef(true);
 
@@ -171,6 +175,7 @@ const ButtonBar = () => {
 
     let timerGang;
     if (currentState === ENUMSTATE.DEEP_SLEEP_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.deepSleep);
       disableAllArrows();
       enableArrow("deepSleepToFactoryArrow");
       document.getElementById("bellpalWatchRegular").src = "BellpalWatch_ORIGINAL_new.png"
@@ -193,6 +198,7 @@ const ButtonBar = () => {
       if (isFactoryResetActive === true) { setIsFactoryResetActive(false); }
     }
     else if (currentState === ENUMSTATE.FACTORY_DEFAULT_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.factoryDefault);
       disableAllArrows();
       enableArrow("factoryDefaultToDeepSleepArrow");
       enableArrow("factoryDefaultToSensingArrow");
@@ -226,6 +232,7 @@ const ButtonBar = () => {
       }
     }
     else if (currentState === ENUMSTATE.SENSING_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.sensing);
       disableAllArrows();
       enableArrow("sensingToFactoryDefaultArrow");
       enableArrow("sensingToLightSleep");
@@ -261,6 +268,7 @@ const ButtonBar = () => {
       }
     }
     else if (currentState === ENUMSTATE.LIGHT_SLEEP_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.lightSleep);
       disableAllArrows();
       enableArrow("lightSleepToSensing");
       document.getElementById("bellpalWatchRegular").src = "BellpalWatch_ORIGINAL_new.png"
@@ -278,6 +286,7 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Light sleeping mode active";
     }
     else if (currentState === ENUMSTATE.NOTIFYING_APP_FALL_ALARM_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.notifyingAppFallAlarm);
       disableAllArrows();
       enableArrow("notifyingFallAlarmToSendingAlarm");
       enableArrow("notifyingFallAlarmToResettingAlarm");
@@ -291,13 +300,14 @@ const ButtonBar = () => {
       enableButton("LongHold");     // Factory reset watch
       disableButton("SimulateAutomaticFallAlarmBtn");
 
-      // 3 second timer before we enter Sending alarm state
-      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), 3000);
+      // 5 second timer before we enter Sending alarm state
+      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), waitFiveSeconds);
 
       document.getElementById("TopAlarmLabel").className = "badge badge-info";
       document.getElementById("TopAlarmLabel").innerHTML = "Trying to send automatic fall alarm to phone";
     }
     else if (currentState === ENUMSTATE.NOTIFYING_APP_MANUAL_ALARM_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.notifyingAppManualAlarm);
       disableAllArrows();
       enableArrow("notifyingManualAlarmToSendingAlarm");
       enableArrow("notifyingManualAlarmToResettingAlarm");
@@ -311,13 +321,14 @@ const ButtonBar = () => {
       enableButton("LongHold");     // Factory reset watch
       disableButton("SimulateAutomaticFallAlarmBtn");
 
-      // 3 second timer before we enter Sending alarm state
-      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), 3000);
+      // 5 second timer before we enter Sending alarm state
+      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENDING_ALARM_STATE), waitFiveSeconds);
 
       document.getElementById("TopAlarmLabel").className = "badge badge-info";
       document.getElementById("TopAlarmLabel").innerHTML = "Trying to send manual alarm to phone";
     }
     else if (currentState === ENUMSTATE.SENDING_ALARM_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.sendingAlarm);
       disableAllArrows();
       enableArrow("sendingAlarmToResettingAlarm");
       enableArrow("sendingAlarmToAlarmConfirmed");
@@ -336,6 +347,7 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Alarm sent, 30sec before alarm is sent to followers";
     }
     else if (currentState === ENUMSTATE.ALARM_CONFIRMED_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.alarmConfirmed);
       disableAllArrows();
       enableArrow("alarmConfirmedToResettingAlarm");
       startBlinking("BellpalWatch_GREEN_new.png");
@@ -352,6 +364,7 @@ const ButtonBar = () => {
       document.getElementById("TopAlarmLabel").innerHTML = "Alarm confirmed by follower";
     }
     else if (currentState === ENUMSTATE.RESETTING_ALARM_STATE) {
+      setCurrentStateInfoPanelText(panelTexts.state.resettingAlarm);
       disableAllArrows();
       enableArrow("resettingAlarmToSensing");
       document.getElementById("bellpalWatchRegular").src = "BellpalWatch_ORIGINAL_new.png"
@@ -370,7 +383,7 @@ const ButtonBar = () => {
       disableButton("SimulateAutomaticFallAlarmBtn");
       // if isFactoryResetActive === true we need to go through sensing state towards deep sleep state. Although we
       // ALWAYS go to sensing state from reset state so here it is not a problem.
-      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENSING_STATE), 2000); // Changes state to Sensing state after 2 sec
+      timerGang = setTimeout(() => setCurrentState(ENUMSTATE.SENSING_STATE), waitFiveSeconds); // Changes state to Sensing state after 5 sec
       document.getElementById("TopAlarmLabel").className = "badge badge-secondary";
       document.getElementById("TopAlarmLabel").innerHTML = "Resetting Alarm";
       if (isFactoryResetActive === true) {
@@ -395,7 +408,7 @@ const ButtonBar = () => {
     }, 1000);
     setIntervalId(id);
 
-    const timerGang = setTimeout(() => setIsAlarmingFollowers(true), 3000); // After 3 sec we change a boolean to display that alarm is being sent to followers // SHOULD BE 30sek IRL
+    const timerGang = setTimeout(() => setIsAlarmingFollowers(true), waitFiveSeconds); // After 5 sec we change a boolean to display that alarm is being sent to followers // SHOULD BE 30sek IRL
     return timerGang;
   }
 
@@ -551,7 +564,7 @@ const ButtonBar = () => {
                 className="btn btn-danger btn-sm btn-Short-Hold m-1"
                 data-toggle="dropdown"
               >
-                Alarm
+                Short hold
               </button>
             </Tippy>
 
@@ -566,7 +579,7 @@ const ButtonBar = () => {
                 onClick={() => handleOnWatchButton_MediumHold()}
                 className="btn btn-danger btn-sm btn-Medium-Hold m-1"
               >
-                Reset Alarm
+                Medium hold
               </button>
             </Tippy>
 
@@ -580,9 +593,11 @@ const ButtonBar = () => {
                 onClick={() => handleOnWatchButton_LongHold()}
                 className="btn btn-danger btn-sm btn-Long-Hold m-1"
               >
-                Factory Reset
+                Long hold
               </button>
             </Tippy>
+
+
 
             {/* <Tippy content={  THIS DOES NOT WORK. ARROW IS NOT HOOVERABLE SADLY
               <div>
@@ -591,6 +606,13 @@ const ButtonBar = () => {
               <Xarrow {...xArrowProps.botToTopProps} id="deepSleepToFactoryArrow" start="ConnectWatchToPhone" end="factoryDefaultStateBtn" />
             </Tippy> */}
 
+          </div>
+
+          <nav id="navbarStateInfo" className="navbar navbar-dark bg-primary" style={{ border: "" }}>State info panel</nav>
+          <div id="stateInfoPanel">
+            <div id="stateText">
+              {currentStateInfoPanelText}
+            </div>
           </div>
 
 
@@ -650,7 +672,7 @@ const ButtonBar = () => {
 
       <div>
 
-        {/* <Xarrow {...xArrowProps.botToTopProps} id="deepSleepToFactoryArrow" start="deepSleepStateBtn" end="factoryDefaultStateBtn" /> */}
+        <Xarrow {...xArrowProps.botToTopProps} id="deepSleepToFactoryArrow" start="deepSleepStateBtn" end="factoryDefaultStateBtn" />
         <Xarrow {...xArrowProps.returnTopToBotProps} id="factoryDefaultToDeepSleepArrow" start="factoryDefaultStateBtn" end="deepSleepStateBtn" />
         <Xarrow {...xArrowProps.botToTopProps} id="factoryDefaultToSensingArrow" start="factoryDefaultStateBtn" end="sensingStateBtn" />
         <Xarrow {...xArrowProps.returnTopToBotProps} id="sensingToFactoryDefaultArrow" start="sensingStateBtn" end="factoryDefaultStateBtn" />
@@ -669,8 +691,12 @@ const ButtonBar = () => {
         <Xarrow {...xArrowProps.alarmConfirmedToResetAlarm} id="alarmConfirmedToResettingAlarm" start="alarmConfirmedStateBtn" end="resettingAlarmStateBtn" />
 
         <Xarrow {...xArrowProps.resettingAlarmToSensing} id="resettingAlarmToSensing" start="resettingAlarmStateBtn" end="sensingStateBtn" />
+
+        
       </div>
     </div>
+
+
 
   );
 };

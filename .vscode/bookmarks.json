@@ -1,0 +1,59 @@
+{
+	"files": [
+		{
+			"path": "src/components/buttonBar.jsx",
+			"bookmarks": [
+				{
+					"line": 176,
+					"column": 2,
+					"label": "Deep sleep state"
+				},
+				{
+					"line": 199,
+					"column": 2,
+					"label": "Factory default state"
+				},
+				{
+					"line": 233,
+					"column": 2,
+					"label": "Sensing state"
+				},
+				{
+					"line": 269,
+					"column": 2,
+					"label": "Light sleep state"
+				},
+				{
+					"line": 287,
+					"column": 2,
+					"label": "Automaticnotifying alarm state"
+				},
+				{
+					"line": 308,
+					"column": 2,
+					"label": "Manual notifying alarm state"
+				},
+				{
+					"line": 329,
+					"column": 2,
+					"label": "Sending alarm state"
+				},
+				{
+					"line": 348,
+					"column": 2,
+					"label": "Confirmed alarm state"
+				},
+				{
+					"line": 365,
+					"column": 2,
+					"label": "Resetting Alarm state"
+				},
+				{
+					"line": 611,
+					"column": 4,
+					"label": "State info panel"
+				}
+			]
+		}
+	]
+}

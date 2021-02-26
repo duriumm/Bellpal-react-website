@@ -48,24 +48,24 @@ img {
   display: flex;
   justify-content: space-around;
   /* textColor below */
-  color: #ffead0;
+  color: whitesmoke;
   background-color: #113537 !important;
   border: #050f10;
   border-bottom-style: solid;
   /* font-weight: bold; */
-  font-family:Verdana, Geneva, Tahoma, sans-serif
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 #navbarLeft {
   display: flex;
   justify-content: space-around;
   /* textColor below */
-  color: #ffead0;
+  color: whitesmoke;
 
   background-color: #37505c !important;
   border: #050f10;
   border-bottom-style: solid;
-  font-family:Verdana, Geneva, Tahoma, sans-serif
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 #container {
@@ -76,12 +76,34 @@ img {
   min-height: 100vh;
 }
 
+#stateInfoPanel {
+  /* THIS DISPLAY AND FLEX WRAP DOESNT DO ANYTHING!!! FIX */
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #ffead0 !important;
+  height: 335px;
+}
+
+#navbarStateInfo {
+  display: flex;
+  justify-content: space-around;
+  /* textColor below */
+  color: whitesmoke;
+
+  background-color: #37505c !important;
+  border: #050f10;
+  border-bottom-style: solid;
+  border-top-style: solid;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 /* Height here cant be 100% cos then it looks like on the pic  */
 #leftSide {
   background: #113537;
   opacity: 70%;
   border: #050f10;
   border-style: solid;
+  width: 30%;
 }
 
 /* Height is 100% here which is what i want */
