@@ -143,6 +143,24 @@ img {
   left: 23px;
 }
 
+.custom-Badge-Trying-Send {
+  background-color: #a67780 !important;
+
+  border-color: #a67780 !important;
+}
+
+.custom-Badge-Connected {
+  background-color: #2c878c !important;
+
+  border-color: #2c878c !important;
+}
+
+.custom-Blue-Badge {
+  background-color: #8cacba !important;
+
+  border-color: #8cacba !important;
+}
+
 .custom-Badge {
   background-color: #ffead0 !important;
 
