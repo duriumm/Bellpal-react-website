@@ -10,8 +10,8 @@ import 'tippy.js/dist/tippy.css'; // optional
 function App() {
   return (
     <div
-      // className="App"
-      // style={{ backgroundColor: "#FFEAD0" }}
+      className="App"
+      style={{ backgroundColor: "#FFEAD0" }}
     >
 
       <ButtonBar />
