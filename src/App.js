@@ -11,7 +11,7 @@ function App() {
   return (
     <div
       className="App"
-      style={{ backgroundColor: "#FFEAD0" }}
+      // style={{ backgroundColor: "#FFEAD0" }}
     >
 
       <ButtonBar />
