@@ -10,7 +10,7 @@ import 'tippy.js/dist/tippy.css'; // optional
 function App() {
   return (
     <div
-      className="App"
+      // className="App"
       // style={{ backgroundColor: "#FFEAD0" }}
     >
 
