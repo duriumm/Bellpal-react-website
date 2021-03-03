@@ -13,39 +13,39 @@ import { panelTexts } from "./stateInfoPanelText"
 
 
 const ENUMSTATE = {
-  SENSING_STATE: "SENSING_STATE", // 0
-  LIGHT_SLEEP_STATE: "LIGHT_SLEEP_STATE", // 1
-  NOTIFYING_APP_FALL_ALARM_STATE: "NOTIFYING_APP_FALL_ALARM_STATE", // 2
-  NOTIFYING_APP_MANUAL_ALARM_STATE: "NOTIFYING_APP_MANUAL_ALARM_STATE", // 3
-  SENDING_ALARM_STATE: "SENDING_ALARM_STATE", // 4
-  ALARM_CONFIRMED_STATE: "ALARM_CONFIRMED_STATE", // 5
-  RESETTING_ALARM_STATE: "RESETTING_ALARM_STATE", // 6
-  FACTORY_DEFAULT_STATE: "FACTORY_DEFAULT_STATE", // 7
-  DEEP_SLEEP_STATE: "DEEP_SLEEP_STATE" // 8
+  SENSING_STATE: 0, // 0
+  LIGHT_SLEEP_STATE: 1, // 1
+  NOTIFYING_APP_FALL_ALARM_STATE: 2, // 2
+  NOTIFYING_APP_MANUAL_ALARM_STATE: 3, // 3
+  SENDING_ALARM_STATE: 4, // 4
+  ALARM_CONFIRMED_STATE: 5, // 5
+  RESETTING_ALARM_STATE: 6, // 6
+  FACTORY_DEFAULT_STATE: 7, // 7
+  DEEP_SLEEP_STATE: 8 // 8
 };
 
 const topBtnArray = [
-  { btnId: "lightSleepStateBtn", textOnBtn: "Light Sleep" },
+  { btnId: "lightSleepStateBtn", textOnBtn: "(1) Light Sleep" },
   { btnId: "EMPTYBTN1", textOnBtn: "" },
-  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "Notifying App Fall Alarm" },
+  { btnId: "notifyingAppFallAlarmStateBtn", textOnBtn: "(2) Notifying App Fall Alarm" },
   { btnId: "EMPTYBTN2", textOnBtn: "" }
 ];
 const midTopBtnArray = [
-  { btnId: "sensingStateBtn", textOnBtn: "Sensing" },
-  { btnId: "alarmConfirmedStateBtn", textOnBtn: "Alarm Confirmed" },
+  { btnId: "sensingStateBtn", textOnBtn: "(0) Sensing" },
+  { btnId: "alarmConfirmedStateBtn", textOnBtn: "(5) Alarm Confirmed" },
   { btnId: "EMPTYBTN3", textOnBtn: "" },
   { btnId: "EMPTYBTN4", textOnBtn: "" }
 ];
 const midBtnArray = [
-  { btnId: "factoryDefaultStateBtn", textOnBtn: "Factory Default" },
+  { btnId: "factoryDefaultStateBtn", textOnBtn: "(7) Factory Default" },
   { btnId: "EMPTYBTN5", textOnBtn: "" },
-  { btnId: "resettingAlarmStateBtn", textOnBtn: "Resetting Alarm" },
-  { btnId: "sendingAlarmStateBtn", textOnBtn: "Sending Alarm" }
+  { btnId: "resettingAlarmStateBtn", textOnBtn: "(6) Resetting Alarm" },
+  { btnId: "sendingAlarmStateBtn", textOnBtn: "(4) Sending Alarm" }
 ];
 const botBtnArray = [
-  { btnId: "deepSleepStateBtn", textOnBtn: "Deep Sleep" },
+  { btnId: "deepSleepStateBtn", textOnBtn: "(8) Deep Sleep" },
   { btnId: "EMPTYBTN6", textOnBtn: "" },
-  { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "Notify App Manual Alarm" },
+  { btnId: "notifyingAppManualAlarmStateBtn", textOnBtn: "(3) Notify App Manual Alarm" },
   { btnId: "EMPTYBTN7", textOnBtn: "" }
 
 ];
