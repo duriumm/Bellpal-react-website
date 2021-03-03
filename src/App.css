@@ -109,7 +109,7 @@ img {
 /* Height is 100% here which is what i want */
 #rightSide {
   background: #37505c;
-  opacity: 70%;
+  opacity: 0.7;
   border: #050f10;
   border-style: solid;
   flex-wrap: nowrap;
