@@ -1,6 +1,5 @@
 .App {
   text-align: center;
-  background-size: 30px;
 }
 
 /*  bellpalbildens stats här */
@@ -101,7 +100,7 @@ img {
 /* Height here cant be 100% cos then it looks like on the pic  */
 #leftSide {
   background: #113537;
-  opacity: 70%;
+  opacity: 0.7;
   border: #050f10;
   border-style: solid;
   width: 30%;
